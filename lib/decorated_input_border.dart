@@ -116,14 +116,8 @@ class DecoratedInputBorder extends InputBorder with DecorationPainter {
   void paint(Canvas canvas, Rect rect, {double? gapStart, double gapExtent = 0.0, double gapPercentage = 0.0, TextDirection? textDirection}) {
     paintDecoration(canvas, rect, textDirection: textDirection);
 
-    // if (borderGradient == null) {
-    if (child.borderSide is GradientBorderSide) {
-      // (child.borderSide as GradientBorderSide).setRect(rect);
-    }
     child.paint(canvas, rect, textDirection: textDirection, gapStart: gapStart, gapExtent: gapExtent, gapPercentage: gapPercentage);
-    // } else {
-    //   paintBorder2(canvas, rect, textDirection: textDirection);
-    // }
+
     paintBorder2(canvas, rect, borderGradient, textDirection: textDirection);
   }
 
