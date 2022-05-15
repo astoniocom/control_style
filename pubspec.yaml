@@ -1,6 +1,6 @@
 name: control_style
-description: Adds extra decoration to Flutter text fields and buttons.
-version: 0.0.1
+description: Applies additional decoration to Flutter-based text fields, buttons and other controls. This allows for better interface customisation.
+version: 0.0.2
 repository: https://github.com/astoniocom/control_style
 issue_tracker: https://github.com/astoniocom/control_style/issues
 homepage: https://astoniocom.github.io/control_style/
