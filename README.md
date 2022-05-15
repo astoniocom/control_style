@@ -1,25 +1,54 @@
-Applies additional appearance settings to Flutter text fields and buttons. Currently supports: outer shadow, inner shadow, border, inner gradient.
+Applies additional appearance settings to Flutter text fields, buttons and other controls. Currently supports: outer shadow, inner shadow, border, inner gradient.
 
 Try it out: [example](https://astoniocom.github.io/control_style/)
 
 ## Intro
 
-The Flutter library provides limited opportunities to set up the appearance of buttons and text fields. You usually make this customisation by wrapping the components into a `Container` widget and configuring it using the `decoration` parameter. Such an approach has limitations as it leads to increasing the volume of work and complicating the code. Especially time consuming in this case is creating animations for switching between different appearances depending on a state of a control.
+The Flutter library provides limited opportunities to set up the appearance of controls. You usually make this customisation by wrapping the components into a `Container` widget and configuring it using the `decoration` parameter. Such an approach has limitations as it leads to increasing the volume of work and complicating the code. Especially time consuming in this case is creating animations for switching between different appearances depending on a state of a control.
 
 In addition, this approach works incorrectly when you are adding shadows to text fields in combination with `errorText` and `helperText`:
 
 ![Container issue](images/container.png)
 
 
-This package helps to solve the aforementioned problem. It provides the most common customisation features for control elements.
+This package helps to solve the aforementioned problem. It provides the most common customisation features for control elements which have `shape` field such as buttons, text fields, `Card`, `Chip`, `Checkbox`, `Dialog`, `Drawer`, inks, `ListTile`, `Material`, `NavigationBar`.
 
-The package provides the same customisation parameters to all text fields and buttons, which allows for identically decorating any of the controls.
+The package provides the same customisation parameters to all controls, which allows for identically decorating any of the controls.
+
+``` dart
+final outlinedShape = DecoratedOutlinedBorder(
+  borderGradient: const GradientBorderSide(
+    gradient: LinearGradient(colors: [Colors.yellow, Colors.blue, Colors.red]),
+    width: 2,
+  ),
+  child: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+);
+
+...
+  Column(children: [
+    const SizedBox(height: 16),
+    Card(child: const Padding(padding: EdgeInsets.all(8.0), child: Text("I'm a Card")), shape: outlinedShape),
+    const SizedBox(height: 16),
+    Chip(label: const Text("I'm a Chip"), shape: outlinedShape),
+    const SizedBox(height: 16),
+    Row(children: [Checkbox(value: false, onChanged: (value) {}, shape: outlinedShape), const Text("I'm a Checkbox")]),
+    const SizedBox(height: 16),
+    Dialog(child: const Padding(padding: EdgeInsets.all(8.0), child: Text("I'm a Dialog")), shape: outlinedShape),
+    const SizedBox(height: 16),
+    ListTile(title: const Text("I'm a ListTile"), shape: outlinedShape),
+    const SizedBox(height: 16),
+  ]);
+...
+
+```
+
+![Control examples](images/control_examples.png)
 
 ## Features
 
 ![Demo](images/demo.gif)
 
-The package enables outer shadow, inner shadow, border and inner gradient styles for Flutter’s standard buttons and text fields. These can be applied without using external button or text field widgets.
+The package enables outer shadow, inner shadow, border and inner gradient styles for Flutter’s standard controls. These can be applied without using external control widgets.
 
 ## Usage
 
