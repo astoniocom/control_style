@@ -57,7 +57,7 @@ class DecoratedOutlinedBorder extends OutlinedBorder with DecorationPainter {
         return DecoratedOutlinedBorder(
           child: result,
           shadow: GradientShadow.lerpList(shadow, b.shadow, t)!,
-          innerShadow: GradientShadow.lerpList(b.innerShadow, innerShadow, t)!,
+          innerShadow: GradientShadow.lerpList(innerShadow, b.innerShadow, t)!,
           backgroundGradient: Gradient.lerp(backgroundGradient, b.backgroundGradient, t),
           borderGradient: GradientBorderSide.lerp(borderGradient, b.borderGradient, t),
         );
