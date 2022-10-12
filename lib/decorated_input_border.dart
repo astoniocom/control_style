@@ -136,7 +136,8 @@ class DecoratedInputBorder extends InputBorder with DecorationPainter {
   }
 
   @override
-  int get hashCode => hashValues(borderSide, child, hashList(shadow), hashList(innerShadow), isOutline, backgroundGradient, borderGradient, clipInner);
+  int get hashCode =>
+      Object.hash(borderSide, child, Object.hashAll(shadow), Object.hashAll(innerShadow), isOutline, backgroundGradient, borderGradient, clipInner);
 
   @override
   String toString() {

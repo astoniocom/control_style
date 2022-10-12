@@ -124,7 +124,7 @@ class DecoratedOutlinedBorder extends OutlinedBorder with DecorationPainter {
   }
 
   @override
-  int get hashCode => hashValues(side, child, hashList(shadow), hashList(innerShadow), backgroundGradient, borderGradient);
+  int get hashCode => Object.hash(side, child, Object.hashAll(shadow), Object.hashAll(innerShadow), backgroundGradient, borderGradient);
 
   @override
   String toString() {

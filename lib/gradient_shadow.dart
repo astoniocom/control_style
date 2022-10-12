@@ -72,7 +72,7 @@ class GradientShadow extends BoxShadow {
   }
 
   @override
-  int get hashCode => hashValues(color, offset, blurRadius, spreadRadius, blurStyle, gradient);
+  int get hashCode => Object.hash(color, offset, blurRadius, spreadRadius, blurStyle, gradient);
 
   @override
   String toString() => 'GradientShadow($color, $offset, ${debugFormatDouble(blurRadius)}, ${debugFormatDouble(spreadRadius)}, $gradient), $blurStyle';

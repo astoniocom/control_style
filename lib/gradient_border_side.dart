@@ -72,7 +72,7 @@ class GradientBorderSide {
   }
 
   @override
-  int get hashCode => hashValues(gradient, width, style);
+  int get hashCode => Object.hash(gradient, width, style);
 
   @override
   String toString() => '${objectRuntimeType(this, 'GradientBorderSide')}(${width.toStringAsFixed(1)}, $style, $gradient)';
