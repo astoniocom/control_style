@@ -13,8 +13,14 @@ class DecoratedInputBorder extends InputBorder with DecorationPainter {
     bool? isOutline,
     this.clipInner = true,
   })  : isOutline = isOutline ?? child.isOutline,
-        child =
-            child.copyWith(borderSide: borderGradient == GradientBorderSide.none ? null : BorderSide(width: borderGradient.width, color: Colors.transparent)),
+        child = child.copyWith(
+          borderSide: borderGradient == GradientBorderSide.none
+              ? null
+              : BorderSide(
+                  width: borderGradient.width,
+                  color: Colors.transparent,
+                ),
+        ),
         super(borderSide: child.borderSide);
 
   @override
@@ -47,8 +53,10 @@ class DecoratedInputBorder extends InputBorder with DecorationPainter {
           child: result,
           shadow: GradientShadow.lerpList(a.shadow, shadow, t)!,
           innerShadow: GradientShadow.lerpList(a.innerShadow, innerShadow, t)!,
-          backgroundGradient: Gradient.lerp(a.backgroundGradient, backgroundGradient, t),
-          borderGradient: GradientBorderSide.lerp(a.borderGradient, borderGradient, t),
+          backgroundGradient:
+              Gradient.lerp(a.backgroundGradient, backgroundGradient, t),
+          borderGradient:
+              GradientBorderSide.lerp(a.borderGradient, borderGradient, t),
           clipInner: clipInner,
         );
       }
@@ -66,8 +74,10 @@ class DecoratedInputBorder extends InputBorder with DecorationPainter {
           child: result,
           shadow: GradientShadow.lerpList(shadow, b.shadow, t)!,
           innerShadow: GradientShadow.lerpList(innerShadow, b.innerShadow, t)!,
-          backgroundGradient: Gradient.lerp(backgroundGradient, b.backgroundGradient, t),
-          borderGradient: GradientBorderSide.lerp(borderGradient, b.borderGradient, t),
+          backgroundGradient:
+              Gradient.lerp(backgroundGradient, b.backgroundGradient, t),
+          borderGradient:
+              GradientBorderSide.lerp(borderGradient, b.borderGradient, t),
           clipInner: clipInner,
         );
       }
@@ -103,20 +113,35 @@ class DecoratedInputBorder extends InputBorder with DecorationPainter {
     final scalledChild = child.scale(t);
 
     return DecoratedInputBorder(
-        child: scalledChild is InputBorder ? scalledChild : child,
-        shadow: GradientShadow.lerpList(null, shadow, t)!,
-        innerShadow: GradientShadow.lerpList(null, innerShadow, t)!,
-        isOutline: isOutline,
-        backgroundGradient: backgroundGradient?.scale(t),
-        borderGradient: borderGradient.scale(t),
-        clipInner: clipInner);
+      child: scalledChild is InputBorder ? scalledChild : child,
+      shadow: GradientShadow.lerpList(null, shadow, t)!,
+      innerShadow: GradientShadow.lerpList(null, innerShadow, t)!,
+      isOutline: isOutline,
+      backgroundGradient: backgroundGradient?.scale(t),
+      borderGradient: borderGradient.scale(t),
+      clipInner: clipInner,
+    );
   }
 
   @override
-  void paint(Canvas canvas, Rect rect, {double? gapStart, double gapExtent = 0.0, double gapPercentage = 0.0, TextDirection? textDirection}) {
+  void paint(
+    Canvas canvas,
+    Rect rect, {
+    double? gapStart,
+    double gapExtent = 0.0,
+    double gapPercentage = 0.0,
+    TextDirection? textDirection,
+  }) {
     paintDecoration(canvas, rect, textDirection: textDirection);
 
-    child.paint(canvas, rect, textDirection: textDirection, gapStart: gapStart, gapExtent: gapExtent, gapPercentage: gapPercentage);
+    child.paint(
+      canvas,
+      rect,
+      textDirection: textDirection,
+      gapStart: gapStart,
+      gapExtent: gapExtent,
+      gapPercentage: gapPercentage,
+    );
 
     paintBorder2(canvas, rect, borderGradient, textDirection: textDirection);
   }
@@ -136,11 +161,21 @@ class DecoratedInputBorder extends InputBorder with DecorationPainter {
   }
 
   @override
-  int get hashCode =>
-      Object.hash(borderSide, child, Object.hashAll(shadow), Object.hashAll(innerShadow), isOutline, backgroundGradient, borderGradient, clipInner);
+  int get hashCode => Object.hash(
+        borderSide,
+        child,
+        Object.hashAll(shadow),
+        Object.hashAll(innerShadow),
+        isOutline,
+        backgroundGradient,
+        borderGradient,
+        clipInner,
+      );
 
   @override
   String toString() {
-    return '${objectRuntimeType(this, 'DecoratedInputBorder')}($borderSide, $shadow, $innerShadow, $child, $isOutline, $backgroundGradient, $borderGradient, $clipInner)';
+    return '${objectRuntimeType(this, 'DecoratedInputBorder')}($borderSide, '
+        '$shadow, $innerShadow, $child, $isOutline, $backgroundGradient, '
+        '$borderGradient, $clipInner)';
   }
 }

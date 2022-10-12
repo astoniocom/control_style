@@ -5,13 +5,19 @@ import 'package:flutter/material.dart';
 
 class GradientShadow extends BoxShadow {
   const GradientShadow({
-    Color color = Colors.transparent,
     required this.gradient,
+    Color color = Colors.transparent,
     Offset offset = Offset.zero,
     double blurRadius = 0.0,
     double spreadRadius = 0.0,
     BlurStyle blurStyle = BlurStyle.normal,
-  }) : super(color: color, offset: offset, blurRadius: blurRadius, spreadRadius: spreadRadius, blurStyle: blurStyle);
+  }) : super(
+          color: color,
+          offset: offset,
+          blurRadius: blurRadius,
+          spreadRadius: spreadRadius,
+          blurStyle: blurStyle,
+        );
 
   final Gradient gradient;
 
@@ -46,13 +52,18 @@ class GradientShadow extends BoxShadow {
     return BoxShadow.lerp(a, b, t);
   }
 
-  static List<BoxShadow>? lerpList(List<BoxShadow>? a, List<BoxShadow>? b, double t) {
+  static List<BoxShadow>? lerpList(
+    List<BoxShadow>? a,
+    List<BoxShadow>? b,
+    double t,
+  ) {
     if (a == null && b == null) return null;
-    a ??= <BoxShadow>[];
-    b ??= <BoxShadow>[];
+    a ??= <BoxShadow>[]; // ignore: parameter_assignments
+    b ??= <BoxShadow>[]; // ignore: parameter_assignments
     final int commonLength = math.min(a.length, b.length);
     return <BoxShadow>[
-      for (int i = 0; i < commonLength; i += 1) GradientShadow.lerp(a[i], b[i], t)!,
+      for (int i = 0; i < commonLength; i += 1)
+        GradientShadow.lerp(a[i], b[i], t)!,
       for (int i = commonLength; i < a.length; i += 1) a[i].scale(1.0 - t),
       for (int i = commonLength; i < b.length; i += 1) b[i].scale(t),
     ];
@@ -72,8 +83,11 @@ class GradientShadow extends BoxShadow {
   }
 
   @override
-  int get hashCode => Object.hash(color, offset, blurRadius, spreadRadius, blurStyle, gradient);
+  int get hashCode =>
+      Object.hash(color, offset, blurRadius, spreadRadius, blurStyle, gradient);
 
   @override
-  String toString() => 'GradientShadow($color, $offset, ${debugFormatDouble(blurRadius)}, ${debugFormatDouble(spreadRadius)}, $gradient), $blurStyle';
+  String toString() =>
+      'GradientShadow($color, $offset, ${debugFormatDouble(blurRadius)}, '
+      '${debugFormatDouble(spreadRadius)}, $gradient), $blurStyle';
 }
