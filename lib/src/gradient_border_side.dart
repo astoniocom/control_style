@@ -23,6 +23,9 @@ class GradientBorderSide {
     GradientBorderSide b,
     double t,
   ) {
+    if (identical(a, b)) {
+      return a;
+    }
     if (t == 0.0) return a;
     if (t == 1.0) return b;
     final width = ui.lerpDouble(a.width, b.width, t)!;

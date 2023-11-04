@@ -47,7 +47,9 @@ class GradientShadow extends BoxShadow {
   ///
   /// The arguments must not be null.
   static BoxShadow? lerp(BoxShadow? a, BoxShadow? b, double t) {
-    if (a == null && b == null) return null;
+    if (identical(a, b)) {
+      return a;
+    }
     if (a == null) return b!.scale(t);
     if (b == null) return a.scale(1.0 - t);
 
@@ -72,7 +74,9 @@ class GradientShadow extends BoxShadow {
     List<BoxShadow>? b,
     double t,
   ) {
-    if (a == null && b == null) return null;
+    if (identical(a, b)) {
+      return a;
+    }
     a ??= <BoxShadow>[]; // ignore: parameter_assignments
     b ??= <BoxShadow>[]; // ignore: parameter_assignments
     final int commonLength = math.min(a.length, b.length);
