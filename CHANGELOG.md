@@ -1,3 +1,9 @@
+## 0.1.0
+
+- document public members
+- place the code in `src` folder
+- fix SDK version
+
 ## 0.0.3
 
 - Replaced deprecated functions.
