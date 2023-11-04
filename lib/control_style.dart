@@ -1,3 +1,7 @@
+/// Applies additional appearance settings to Flutter text fields, buttons and
+/// other controls.
+///
+/// Live example [astoniocom.github.io](https://astoniocom.github.io/control_style/)
 library control_style;
 
 export 'decorated_input_border.dart';

@@ -2,8 +2,47 @@ import 'package:control_style/control_style.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+/// Applies additional decoration to the [InputBorder].
+///
+/// To decorate [InputBorder], the code:
+/// ```dart
+/// MaterialApp(
+///   theme: ThemeData(
+///     inputDecorationTheme: InputDecorationTheme(
+///       border: OutlineInputBorder(
+///         borderRadius: BorderRadius.circular(8),
+///       ),
+///     ),
+///   ),
+/// );
+/// ```
+///
+/// should be updated to:
+///
+/// ```dart
+/// MaterialApp(
+///    theme: ThemeData(
+///      inputDecorationTheme: InputDecorationTheme(
+///        border: DecoratedInputBorder(
+///          shadow: const [
+///            BoxShadow(
+///              color: Colors.blue,
+///              blurRadius: 12,
+///            )
+///          ],
+///          child: OutlineInputBorder(
+///            borderRadius: BorderRadius.circular(8),
+///          ),
+///        ),
+///      ),
+///    ),
+/// ```
 @immutable
 class DecoratedInputBorder extends InputBorder with DecorationPainter {
+  /// Creates a border for an [InputDecorator] by extending the functionality of
+  /// [InputBorder].
+  ///
+  /// The [child] parameter is [InputBorder] for the extension.
   DecoratedInputBorder({
     required InputBorder child,
     this.shadow = const [],

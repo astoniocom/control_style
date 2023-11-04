@@ -3,7 +3,11 @@ import 'dart:ui' as ui show lerpDouble;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+/// A gradient shadow of a border of a box.
 class GradientShadow extends BoxShadow {
+  /// Creates the box gradient shadow.
+  ///
+  /// By default, there is no shadow.
   const GradientShadow({
     required this.gradient,
     Color color = Colors.transparent,
@@ -19,21 +23,29 @@ class GradientShadow extends BoxShadow {
           blurStyle: blurStyle,
         );
 
+  /// A gradient to use when drawing the shadow.
   final Gradient gradient;
 
+  /// Creates the [Paint] object that corresponds to this shadow description.
   Paint toPaintRect(Rect rect, {TextDirection? textDirection}) {
-    final Paint result = Paint()
+    final result = Paint()
       ..color = const Color(0xFF000000)
       ..maskFilter = MaskFilter.blur(blurStyle, blurSigma)
       ..shader = gradient.createShader(rect, textDirection: textDirection);
 
-    assert(() {
-      if (debugDisableShadows) result.maskFilter = null;
-      return true;
-    }());
+    assert(
+      () {
+        if (debugDisableShadows) result.maskFilter = null;
+        return true;
+      }(),
+      'For debugging purposes',
+    );
     return result;
   }
 
+  /// Linearly interpolate between two gradient shadows.
+  ///
+  /// The arguments must not be null.
   static BoxShadow? lerp(BoxShadow? a, BoxShadow? b, double t) {
     if (a == null && b == null) return null;
     if (a == null) return b!.scale(t);
@@ -52,6 +64,9 @@ class GradientShadow extends BoxShadow {
     return BoxShadow.lerp(a, b, t);
   }
 
+  /// Linearly interpolate between two lists of box shadows.
+  ///
+  /// If the lists differ in length, excess items are lerped with null.
   static List<BoxShadow>? lerpList(
     List<BoxShadow>? a,
     List<BoxShadow>? b,

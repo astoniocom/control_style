@@ -2,8 +2,51 @@ import 'package:control_style/control_style.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+/// Applies additional decoration to the [OutlinedBorder].
+///
+/// To decorate [OutlinedBorder], the code:
+/// ```dart
+/// MaterialApp(
+///   theme: ThemeData(
+///     primarySwatch: Colors.blue,
+///     outlinedButtonTheme: OutlinedButtonThemeData(
+///         style: ElevatedButton.styleFrom(
+///       shape: RoundedRectangleBorder(
+///         borderRadius: BorderRadius.circular(8),
+///       ),
+///     )),
+///   ),
+/// );
+/// ```
+///
+/// should be updated to:
+///
+/// ```dart
+/// MaterialApp(
+///   theme: ThemeData(
+///     primarySwatch: Colors.blue,
+///     outlinedButtonTheme: OutlinedButtonThemeData(
+///         style: ElevatedButton.styleFrom(
+///       shape: DecoratedOutlinedBorder(
+///         shadow: const [
+///           BoxShadow(
+///             color: Colors.blue,
+///             blurRadius: 12,
+///           )
+///         ],
+///         child: RoundedRectangleBorder(
+///           borderRadius: BorderRadius.circular(8),
+///         ),
+///       ),
+///     )),
+///   ),
+/// );
+/// ```
 @immutable
 class DecoratedOutlinedBorder extends OutlinedBorder with DecorationPainter {
+  /// Creates [OutlinedBorder] with additional decoration.
+  ///
+  /// The [child] parameter is the [OutlinedBorder] for the extension.
   DecoratedOutlinedBorder({
     required OutlinedBorder child,
     this.shadow = const [],
@@ -87,7 +130,7 @@ class DecoratedOutlinedBorder extends OutlinedBorder with DecorationPainter {
     Gradient? backgroundGradient,
     GradientBorderSide? borderGradient,
   }) {
-    OutlinedBorder resolvedChild = child ?? this.child;
+    var resolvedChild = child ?? this.child;
     if (side != null) {
       resolvedChild = (side != BorderSide.none)
           ? resolvedChild.copyWith(
