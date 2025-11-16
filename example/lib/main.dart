@@ -1,5 +1,4 @@
 import 'package:control_style/control_style.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -167,7 +166,7 @@ class _MyAppState extends State<MyApp> {
                             final curBorderIndex = outlinedBorders.keys.toList().indexOf(borderType);
                             borderType = outlinedBorders.keys.toList()[(curBorderIndex + 1) % outlinedBorders.length];
                           }),
-                      child: Text("${describeEnum(borderType)} border exapmle")),
+                      child: Text("${borderType.name} border exapmle")),
                   const SizedBox(height: 42),
                   const TextField(
                     decoration: InputDecoration(

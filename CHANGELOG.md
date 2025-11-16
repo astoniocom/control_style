@@ -1,3 +1,7 @@
+## 0.1.1
+
+- lint rules updated
+
 ## 0.1.0
 
 - document public members
