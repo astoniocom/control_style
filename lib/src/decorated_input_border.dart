@@ -1,4 +1,6 @@
-import 'package:control_style/control_style.dart';
+import 'package:control_style/src/decoration_painter.dart';
+import 'package:control_style/src/gradient_border_side.dart';
+import 'package:control_style/src/gradient_shadow.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 

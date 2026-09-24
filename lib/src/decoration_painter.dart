@@ -1,6 +1,7 @@
 import 'dart:math';
 
-import 'package:control_style/control_style.dart';
+import 'package:control_style/src/gradient_border_side.dart';
+import 'package:control_style/src/gradient_shadow.dart';
 import 'package:flutter/material.dart';
 
 /// Extends functionality of standard Flutter's [ShapeBorder] with additional
