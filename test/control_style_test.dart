@@ -323,6 +323,72 @@ void main() {
     });
   });
 
+  group('decorations interpolate regardless of the child borders', () {
+    const shadow10 = BoxShadow(color: _red, blurRadius: 10);
+
+    test('children that cannot lerp into each other', () {
+      final a = DecoratedOutlinedBorder(
+        child: const RoundedRectangleBorder(),
+      );
+      final b = DecoratedOutlinedBorder(
+        shadow: const [shadow10],
+        child: const BeveledRectangleBorder(),
+      );
+
+      final result = ShapeBorder.lerp(a, b, 0.5)! as DecoratedOutlinedBorder;
+
+      expect(result.shadow.single.blurRadius, 5);
+    });
+
+    test('from a plain OutlinedBorder', () {
+      final b = DecoratedOutlinedBorder(
+        shadow: const [shadow10],
+        child: const RoundedRectangleBorder(),
+      );
+
+      final result = ShapeBorder.lerp(const RoundedRectangleBorder(), b, 0.5)!
+          as DecoratedOutlinedBorder;
+
+      expect(result.shadow.single.blurRadius, 5);
+    });
+
+    test('to a plain OutlinedBorder', () {
+      final a = DecoratedOutlinedBorder(
+        shadow: const [shadow10],
+        child: const RoundedRectangleBorder(),
+      );
+
+      final result = ShapeBorder.lerp(a, const RoundedRectangleBorder(), 0.25)!
+          as DecoratedOutlinedBorder;
+
+      expect(result.shadow.single.blurRadius, 7.5);
+    });
+
+    test('from a plain InputBorder', () {
+      final b = DecoratedInputBorder(
+        shadow: const [shadow10],
+        child: const OutlineInputBorder(),
+      );
+
+      final result = ShapeBorder.lerp(const OutlineInputBorder(), b, 0.5)!
+          as DecoratedInputBorder;
+
+      expect(result.shadow.single.blurRadius, 5);
+    });
+
+    test('to a plain InputBorder', () {
+      final a = DecoratedInputBorder(
+        shadow: const [shadow10],
+        child: const OutlineInputBorder(),
+      );
+
+      final result = ShapeBorder.lerp(a, const OutlineInputBorder(), 0.25)!
+          as DecoratedInputBorder;
+
+      expect(result.shadow.single.blurRadius, 7.5);
+    });
+  });
+
   group('DecoratedInputBorder keeps isOutline while interpolating', () {
     // `UnderlineInputBorder.isOutline` is false; override it to true.
     final a = DecoratedInputBorder(

@@ -86,20 +86,11 @@ class DecoratedInputBorder extends InputBorder with DecorationPainter {
   @override
   ShapeBorder? lerpFrom(ShapeBorder? a, double t) {
     if (a is DecoratedInputBorder) {
-      final result = child.lerpFrom(a.child, t);
-      if (result is InputBorder) {
-        return DecoratedInputBorder(
-          child: result,
-          shadow: GradientShadow.lerpList(a.shadow, shadow, t)!,
-          innerShadow: GradientShadow.lerpList(a.innerShadow, innerShadow, t)!,
-          backgroundGradient:
-              Gradient.lerp(a.backgroundGradient, backgroundGradient, t),
-          borderGradient:
-              GradientBorderSide.lerp(a.borderGradient, borderGradient, t),
-          isOutline: isOutline,
-          clipInner: clipInner,
-        );
-      }
+      return _lerp(a.child, a, child, this, t);
+    }
+    if (a is InputBorder) {
+      // Interpolate from a plain border as if it had no decoration.
+      return _lerp(a, null, child, this, t);
     }
 
     return super.lerpFrom(a, t);
@@ -108,23 +99,45 @@ class DecoratedInputBorder extends InputBorder with DecorationPainter {
   @override
   ShapeBorder? lerpTo(ShapeBorder? b, double t) {
     if (b is DecoratedInputBorder) {
-      final result = child.lerpTo(b.child, t);
-      if (result is InputBorder) {
-        return DecoratedInputBorder(
-          child: result,
-          shadow: GradientShadow.lerpList(shadow, b.shadow, t)!,
-          innerShadow: GradientShadow.lerpList(innerShadow, b.innerShadow, t)!,
-          backgroundGradient:
-              Gradient.lerp(backgroundGradient, b.backgroundGradient, t),
-          borderGradient:
-              GradientBorderSide.lerp(borderGradient, b.borderGradient, t),
-          isOutline: isOutline,
-          clipInner: clipInner,
-        );
-      }
+      return _lerp(child, this, b.child, b, t);
+    }
+    if (b is InputBorder) {
+      // Interpolate to a plain border as if it had no decoration.
+      return _lerp(child, this, b, null, t);
     }
 
     return super.lerpTo(b, t);
+  }
+
+  /// Interpolates between the borders [childA] and [childB] together with the
+  /// decorations of [a] and [b].
+  ///
+  /// A null [a] or [b] stands for the absence of decoration. The result takes
+  /// [isOutline] and [clipInner] from `this`.
+  DecoratedInputBorder? _lerp(
+    InputBorder childA,
+    DecoratedInputBorder? a,
+    InputBorder childB,
+    DecoratedInputBorder? b,
+    double t,
+  ) {
+    final result = ShapeBorder.lerp(childA, childB, t);
+    if (result is! InputBorder) return null;
+
+    return DecoratedInputBorder(
+      child: result,
+      shadow: GradientShadow.lerpList(a?.shadow, b?.shadow, t)!,
+      innerShadow: GradientShadow.lerpList(a?.innerShadow, b?.innerShadow, t)!,
+      backgroundGradient:
+          Gradient.lerp(a?.backgroundGradient, b?.backgroundGradient, t),
+      borderGradient: GradientBorderSide.lerp(
+        a?.borderGradient ?? GradientBorderSide.none,
+        b?.borderGradient ?? GradientBorderSide.none,
+        t,
+      ),
+      isOutline: isOutline,
+      clipInner: clipInner,
+    );
   }
 
   @override
