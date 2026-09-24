@@ -1,3 +1,12 @@
+## 0.2.0
+
+Breaking changes:
+
+- `DecorationPainter.borderGradient` is declared as non-nullable
+  `GradientBorderSide`. Both bundled implementations already returned a
+  non-null value. Custom implementations of the mixin must return
+  `GradientBorderSide.none` instead of `null`; callers can drop `?.` and `!`.
+
 ## 0.1.2
 
 Bug fixes:

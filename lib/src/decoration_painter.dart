@@ -27,13 +27,16 @@ mixin DecorationPainter on ShapeBorder {
 
   /// A gradient side used when drawing the edge of this shape.
   ///
+  /// Use [GradientBorderSide.none] for no gradient side; the value is never
+  /// null.
+  ///
   /// When set to anything other than [GradientBorderSide.none], it replaces
   /// the side of the [child]: the child's own side is made transparent and
   /// its width is set to the width of the gradient side, so the child's
   /// color, width and stroke alignment are ignored. Use a solid gradient
   /// (two identical colors) to draw a single-color side through the same
   /// mechanism.
-  GradientBorderSide? get borderGradient;
+  GradientBorderSide get borderGradient;
 
   /// Whether to cut out the area inside the shape when painting the outer
   /// [shadow], creating the effect of the shadow being cast behind the shape.
