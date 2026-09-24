@@ -43,6 +43,43 @@ class GradientShadow extends BoxShadow {
     return result;
   }
 
+  /// Returns a new gradient shadow with its offset, blurRadius, and
+  /// spreadRadius scaled by the given factor.
+  ///
+  /// The [gradient] is preserved as is.
+  @override
+  GradientShadow scale(double factor) {
+    return GradientShadow(
+      gradient: gradient,
+      color: color,
+      offset: offset * factor,
+      blurRadius: blurRadius * factor,
+      spreadRadius: spreadRadius * factor,
+      blurStyle: blurStyle,
+    );
+  }
+
+  /// Creates a copy of this object but with the given fields replaced with the
+  /// new values.
+  @override
+  GradientShadow copyWith({
+    Gradient? gradient,
+    Color? color,
+    Offset? offset,
+    double? blurRadius,
+    double? spreadRadius,
+    BlurStyle? blurStyle,
+  }) {
+    return GradientShadow(
+      gradient: gradient ?? this.gradient,
+      color: color ?? this.color,
+      offset: offset ?? this.offset,
+      blurRadius: blurRadius ?? this.blurRadius,
+      spreadRadius: spreadRadius ?? this.spreadRadius,
+      blurStyle: blurStyle ?? this.blurStyle,
+    );
+  }
+
   /// Linearly interpolate between two gradient shadows.
   ///
   /// The arguments must not be null.

@@ -139,4 +139,58 @@ void main() {
       expect(copy.child.side.width, 3);
     });
   });
+
+  group('GradientShadow keeps its gradient', () {
+    const shadow = GradientShadow(
+      gradient: LinearGradient(colors: [Colors.red, Colors.blue]),
+      blurRadius: 10,
+      spreadRadius: 4,
+      offset: Offset(2, 6),
+    );
+
+    test('scale()', () {
+      final scaled = shadow.scale(0.5);
+
+      expect(scaled, isA<GradientShadow>());
+      expect(scaled.gradient, shadow.gradient);
+      expect(scaled.blurRadius, 5);
+      expect(scaled.spreadRadius, 2);
+      expect(scaled.offset, const Offset(1, 3));
+    });
+
+    test('copyWith()', () {
+      final copy = shadow.copyWith(blurRadius: 1);
+
+      expect(copy, isA<GradientShadow>());
+      expect(copy.gradient, shadow.gradient);
+      expect(copy.blurRadius, 1);
+    });
+
+    test('lerp() from null', () {
+      final result = GradientShadow.lerp(null, shadow, 0.5);
+
+      expect(result, isA<GradientShadow>());
+      expect(result!.blurRadius, 5);
+    });
+
+    test('lerpList() with lists of different lengths', () {
+      final result = GradientShadow.lerpList(const [], const [shadow], 0.5)!;
+
+      expect(result, hasLength(1));
+      expect(result.first, isA<GradientShadow>());
+    });
+
+    test('DecoratedOutlinedBorder.scale()', () {
+      final shape = DecoratedOutlinedBorder(
+        shadow: const [shadow],
+        innerShadow: const [shadow],
+        child: const RoundedRectangleBorder(),
+      );
+
+      final scaled = shape.scale(0.5) as DecoratedOutlinedBorder;
+
+      expect(scaled.shadow.single, isA<GradientShadow>());
+      expect(scaled.innerShadow.single, isA<GradientShadow>());
+    });
+  });
 }
