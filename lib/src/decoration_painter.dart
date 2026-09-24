@@ -80,13 +80,7 @@ mixin DecorationPainter on ShapeBorder {
         final bounds =
             rect.shift(boxShadow.offset).deflate(boxShadow.spreadRadius);
         final outerPath = getOuterPath(bounds, textDirection: textDirection)
-          ..addRect(
-            bounds.inflate(
-              boxShadow.blurRadius +
-                  boxShadow.spreadRadius +
-                  max(boxShadow.offset.dx, boxShadow.offset.dy),
-            ),
-          )
+          ..addRect(bounds.inflate(_shadowExtent(boxShadow)))
           ..fillType = PathFillType.evenOdd;
         canvas.drawPath(outerPath, paint);
       }
@@ -100,21 +94,15 @@ mixin DecorationPainter on ShapeBorder {
       if (clipInner) {
         var maxSpreadDistance = .0;
         for (final boxShadow in shadow) {
-          final curSpreadDistane = (boxShadow.blurRadius +
-                  boxShadow.spreadRadius +
-                  max(boxShadow.offset.dx, boxShadow.offset.dy)) *
-              2;
-          maxSpreadDistance = max(maxSpreadDistance, curSpreadDistane);
+          maxSpreadDistance =
+              max(maxSpreadDistance, _shadowExtent(boxShadow) * 2);
         }
 
-        if (maxSpreadDistance > 0) {
-          final clipPath = Path()
-            // ..addRect(const Rect.fromLTWH(-1000, -1000, 2000, 2000))
-            ..addRect(rect.inflate(maxSpreadDistance))
-            ..addPath(innerPath, Offset.zero)
-            ..fillType = PathFillType.evenOdd;
-          canvas.clipPath(clipPath);
-        }
+        final clipPath = Path()
+          ..addRect(rect.inflate(maxSpreadDistance))
+          ..addPath(innerPath, Offset.zero)
+          ..fillType = PathFillType.evenOdd;
+        canvas.clipPath(clipPath);
       }
 
       // Draw shadow
@@ -132,6 +120,14 @@ mixin DecorationPainter on ShapeBorder {
 
       canvas.restore();
     }
+  }
+
+  /// The distance the [boxShadow] may reach beyond the edge of the shape it is
+  /// cast by, in any direction.
+  static double _shadowExtent(BoxShadow boxShadow) {
+    return boxShadow.blurRadius +
+        boxShadow.spreadRadius +
+        max(boxShadow.offset.dx.abs(), boxShadow.offset.dy.abs());
   }
 
   /// Paints an additional border on top of the existing one to add the ability

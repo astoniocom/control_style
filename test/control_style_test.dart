@@ -43,6 +43,7 @@ Future<Color> _pixel(ui.Image image, int x, int y) async {
 }
 
 bool _isRed(Color c) => c.a > 0.99 && c.r > 0.9 && c.g < 0.1 && c.b < 0.1;
+bool _isWhite(Color c) => c.a > 0.99 && c.r > 0.99 && c.g > 0.99 && c.b > 0.99;
 
 void main() {
   group('outer shadow clip must not leak out of paint()', () {
@@ -247,6 +248,45 @@ void main() {
         () => side.toPaint(_shapeRect, textDirection: TextDirection.rtl),
         returnsNormally,
       );
+    });
+  });
+
+  group('shadows with negative offsets', () {
+    testWidgets('outer shadow shifted to the left is not clipped away', (
+      tester,
+    ) async {
+      await tester.runAsync(() async {
+        final shape = DecoratedOutlinedBorder(
+          shadow: const [BoxShadow(color: _red, offset: Offset(-30, 0))],
+          child: const RoundedRectangleBorder(),
+        );
+        final image = await _rasterize(shape);
+        // The shadow is the shape shifted 30px to the left, so the strip
+        // between x = -10 and x = 20 (rect.left) must be red.
+        expect(_isRed(await _pixel(image, 5, 70)), isTrue);
+        expect(_isRed(await _pixel(image, 15, 70)), isTrue);
+        // Interior stays clear because of `clipInner`.
+        expect(_isWhite(await _pixel(image, 70, 70)), isTrue);
+      });
+    });
+
+    testWidgets('inner shadow shifted to the left is not clipped away', (
+      tester,
+    ) async {
+      await tester.runAsync(() async {
+        final shape = DecoratedOutlinedBorder(
+          innerShadow: const [BoxShadow(color: _red, offset: Offset(-30, 0))],
+          child: const RoundedRectangleBorder(),
+        );
+        final image = await _rasterize(shape);
+        // The inner shadow is the area of the shape not covered by the shape
+        // shifted 30px to the left: the strip rect.right - 30 .. rect.right.
+        expect(_isRed(await _pixel(image, 95, 70)), isTrue);
+        expect(_isRed(await _pixel(image, 115, 70)), isTrue);
+        expect(_isWhite(await _pixel(image, 85, 70)), isTrue);
+        // Nothing is painted outside the shape.
+        expect(_isWhite(await _pixel(image, 125, 70)), isTrue);
+      });
     });
   });
 }
