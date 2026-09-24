@@ -91,6 +91,8 @@ mixin DecorationPainter on ShapeBorder {
     }
 
     if (shadow.isNotEmpty) {
+      canvas.save();
+
       // Clip inner
       if (clipInner) {
         var maxSpreadDistance = .0;
@@ -124,6 +126,8 @@ mixin DecorationPainter on ShapeBorder {
           paint,
         );
       }
+
+      canvas.restore();
     }
   }
 
