@@ -54,7 +54,7 @@ class DecoratedOutlinedBorder extends OutlinedBorder with DecorationPainter {
     this.backgroundGradient,
     this.borderGradient = GradientBorderSide.none,
   })  : child = child.copyWith(
-          side: borderGradient == GradientBorderSide.none
+          side: borderGradient.isNone
               ? null
               : BorderSide(
                   width: borderGradient.width,

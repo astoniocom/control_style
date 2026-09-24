@@ -53,7 +53,7 @@ class DecoratedInputBorder extends InputBorder with DecorationPainter {
     this.clipInner = true,
   })  : isOutline = isOutline ?? child.isOutline,
         child = child.copyWith(
-          borderSide: borderGradient == GradientBorderSide.none
+          borderSide: borderGradient.isNone
               ? null
               : BorderSide(
                   width: borderGradient.width,

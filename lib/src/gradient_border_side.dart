@@ -63,6 +63,12 @@ class GradientBorderSide {
   /// A gradient to use when filling the shape.
   final Gradient gradient;
 
+  /// Whether this side is not painted, i.e. its [style] is [BorderStyle.none].
+  ///
+  /// Unlike comparing against [none], this also covers sides that have a
+  /// non-zero [width] or a custom [gradient] but are switched off via [style].
+  bool get isNone => style == BorderStyle.none;
+
   /// Returns a new gradient border with its width and style scaled by the given
   /// factor.
   GradientBorderSide scale(double t) {

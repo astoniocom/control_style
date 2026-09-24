@@ -290,6 +290,39 @@ void main() {
     });
   });
 
+  group('child side is kept when the gradient border is switched off', () {
+    const childSide = BorderSide(color: _red, width: 4);
+    const offGradient = GradientBorderSide(
+      gradient: _redGradient,
+      width: 2,
+      style: BorderStyle.none,
+    );
+
+    test('GradientBorderSide.isNone', () {
+      expect(GradientBorderSide.none.isNone, isTrue);
+      expect(offGradient.isNone, isTrue);
+      expect(const GradientBorderSide(gradient: _redGradient).isNone, isFalse);
+    });
+
+    test('DecoratedOutlinedBorder', () {
+      final shape = DecoratedOutlinedBorder(
+        borderGradient: offGradient,
+        child: const RoundedRectangleBorder(side: childSide),
+      );
+
+      expect(shape.child.side, childSide);
+    });
+
+    test('DecoratedInputBorder', () {
+      final shape = DecoratedInputBorder(
+        borderGradient: offGradient,
+        child: const OutlineInputBorder(borderSide: childSide),
+      );
+
+      expect(shape.child.borderSide, childSide);
+    });
+  });
+
   group('DecoratedInputBorder keeps isOutline while interpolating', () {
     // `UnderlineInputBorder.isOutline` is false; override it to true.
     final a = DecoratedInputBorder(
