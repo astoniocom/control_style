@@ -587,6 +587,41 @@ void main() {
     });
   });
 
+  group('DecoratedOutlinedBorder.clipInner', () {
+    DecoratedOutlinedBorder build({required bool clipInner}) {
+      return DecoratedOutlinedBorder(
+        shadow: const [BoxShadow(color: _red, offset: Offset(-30, 0))],
+        clipInner: clipInner,
+        child: const RoundedRectangleBorder(),
+      );
+    }
+
+    testWidgets('false paints the shadow over the interior', (tester) async {
+      await tester.runAsync(() async {
+        final image = await _rasterize(build(clipInner: false));
+
+        expect(_isRed(await _pixel(image, 70, 70)), isTrue);
+      });
+    });
+
+    test('survives copyWith, scale and lerp', () {
+      final shape = build(clipInner: false);
+
+      expect(shape.copyWith(shadow: const []).clipInner, isFalse);
+      expect(shape.scale(0.5).clipInner, isFalse);
+      expect(
+        (ShapeBorder.lerp(shape, build(clipInner: false), 0.5)!
+                as DecoratedOutlinedBorder)
+            .clipInner,
+        isFalse,
+      );
+    });
+
+    test('is part of equality', () {
+      expect(build(clipInner: true), isNot(build(clipInner: false)));
+    });
+  });
+
   group('DecoratedInputBorder keeps isOutline while interpolating', () {
     // `UnderlineInputBorder.isOutline` is false; override it to true.
     final a = DecoratedInputBorder(

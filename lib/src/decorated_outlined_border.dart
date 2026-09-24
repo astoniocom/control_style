@@ -55,6 +55,7 @@ class DecoratedOutlinedBorder extends OutlinedBorder with DecorationPainter {
     this.innerShadow = const [],
     this.backgroundGradient,
     this.borderGradient = GradientBorderSide.none,
+    this.clipInner = true,
   })  : child = child.copyWith(
           side: borderGradient.isNone
               ? null
@@ -81,7 +82,7 @@ class DecoratedOutlinedBorder extends OutlinedBorder with DecorationPainter {
   final GradientBorderSide borderGradient;
 
   @override
-  final bool clipInner = true;
+  final bool clipInner;
 
   @override
   ShapeBorder? lerpFrom(ShapeBorder? a, double t) {
@@ -112,8 +113,9 @@ class DecoratedOutlinedBorder extends OutlinedBorder with DecorationPainter {
   /// Interpolates between the borders [childA] and [childB] together with the
   /// decorations of [a] and [b].
   ///
-  /// A null [a] or [b] stands for the absence of decoration.
-  static DecoratedOutlinedBorder? _lerp(
+  /// A null [a] or [b] stands for the absence of decoration. The result takes
+  /// [clipInner] from `this`.
+  DecoratedOutlinedBorder? _lerp(
     OutlinedBorder childA,
     DecoratedOutlinedBorder? a,
     OutlinedBorder childB,
@@ -134,6 +136,7 @@ class DecoratedOutlinedBorder extends OutlinedBorder with DecorationPainter {
         b?.borderGradient ?? GradientBorderSide.none,
         t,
       ),
+      clipInner: clipInner,
     );
   }
 
@@ -145,6 +148,7 @@ class DecoratedOutlinedBorder extends OutlinedBorder with DecorationPainter {
     List<BoxShadow>? innerShadow,
     Gradient? backgroundGradient,
     GradientBorderSide? borderGradient,
+    bool? clipInner,
   }) {
     return DecoratedOutlinedBorder(
       child: (child ?? this.child).copyWith(side: side),
@@ -152,18 +156,20 @@ class DecoratedOutlinedBorder extends OutlinedBorder with DecorationPainter {
       innerShadow: innerShadow ?? this.innerShadow,
       backgroundGradient: backgroundGradient ?? this.backgroundGradient,
       borderGradient: borderGradient ?? this.borderGradient,
+      clipInner: clipInner ?? this.clipInner,
     );
   }
 
   @override
   DecoratedOutlinedBorder scale(double t) {
-    final scalledChild = child.scale(t);
+    final scaledChild = child.scale(t);
     return DecoratedOutlinedBorder(
-      child: scalledChild is OutlinedBorder ? scalledChild : child,
+      child: scaledChild is OutlinedBorder ? scaledChild : child,
       shadow: GradientShadow.lerpList(null, shadow, t)!,
       innerShadow: GradientShadow.lerpList(null, innerShadow, t)!,
       backgroundGradient: backgroundGradient?.scale(t),
       borderGradient: borderGradient.scale(t),
+      clipInner: clipInner,
     );
   }
 
@@ -185,7 +191,8 @@ class DecoratedOutlinedBorder extends OutlinedBorder with DecorationPainter {
         listEquals<BoxShadow>(other.shadow, shadow) &&
         listEquals<BoxShadow>(other.innerShadow, innerShadow) &&
         other.backgroundGradient == backgroundGradient &&
-        other.borderGradient == borderGradient;
+        other.borderGradient == borderGradient &&
+        other.clipInner == clipInner;
   }
 
   @override
@@ -196,11 +203,13 @@ class DecoratedOutlinedBorder extends OutlinedBorder with DecorationPainter {
         Object.hashAll(innerShadow),
         backgroundGradient,
         borderGradient,
+        clipInner,
       );
 
   @override
   String toString() {
     return '${objectRuntimeType(this, 'DecoratedOutlinedBorder')}($side, '
-        '$shadow, $innerShadow, $child, $backgroundGradient, $borderGradient)';
+        '$shadow, $innerShadow, $child, $backgroundGradient, $borderGradient, '
+        '$clipInner)';
   }
 }

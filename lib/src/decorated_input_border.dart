@@ -166,10 +166,10 @@ class DecoratedInputBorder extends InputBorder with DecorationPainter {
 
   @override
   DecoratedInputBorder scale(double t) {
-    final scalledChild = child.scale(t);
+    final scaledChild = child.scale(t);
 
     return DecoratedInputBorder(
-      child: scalledChild is InputBorder ? scalledChild : child,
+      child: scaledChild is InputBorder ? scaledChild : child,
       shadow: GradientShadow.lerpList(null, shadow, t)!,
       innerShadow: GradientShadow.lerpList(null, innerShadow, t)!,
       isOutline: isOutline,
