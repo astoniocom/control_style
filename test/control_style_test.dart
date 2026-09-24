@@ -483,6 +483,110 @@ void main() {
     });
   });
 
+  group('borders listed as supported in README', () {
+    const gradient = LinearGradient(colors: [Colors.red, Colors.blue]);
+    const shadow = GradientShadow(gradient: gradient, blurRadius: 8);
+    const border = GradientBorderSide(gradient: gradient, width: 2);
+
+    const outlinedBorders = <OutlinedBorder>[
+      BeveledRectangleBorder(),
+      CircleBorder(),
+      ContinuousRectangleBorder(),
+      RoundedRectangleBorder(),
+      StadiumBorder(),
+    ];
+    const inputBorders = <InputBorder>[
+      UnderlineInputBorder(),
+      OutlineInputBorder(),
+    ];
+
+    void paint(ShapeBorder shape) {
+      shape.paint(Canvas(ui.PictureRecorder()), _shapeRect);
+    }
+
+    for (final child in outlinedBorders) {
+      test('${child.runtimeType} paints with every decoration', () {
+        final shape = DecoratedOutlinedBorder(
+          shadow: const [shadow],
+          innerShadow: const [shadow],
+          backgroundGradient: gradient,
+          borderGradient: border,
+          child: child,
+        );
+
+        expect(() => paint(shape), returnsNormally);
+        expect(() => paint(shape.scale(0.5)), returnsNormally);
+      });
+    }
+
+    for (final child in inputBorders) {
+      test('${child.runtimeType} paints with every decoration', () {
+        final shape = DecoratedInputBorder(
+          shadow: const [shadow],
+          innerShadow: const [shadow],
+          backgroundGradient: gradient,
+          borderGradient: border,
+          child: child,
+        );
+
+        expect(() => paint(shape), returnsNormally);
+        expect(() => paint(shape.scale(0.5)), returnsNormally);
+      });
+    }
+  });
+
+  group('equality', () {
+    const gradient = LinearGradient(colors: [Colors.red, Colors.blue]);
+
+    test('GradientShadow', () {
+      const a = GradientShadow(gradient: gradient, blurRadius: 4);
+      const b = GradientShadow(gradient: gradient, blurRadius: 4);
+      const c = GradientShadow(gradient: gradient, blurRadius: 5);
+
+      expect(a, b);
+      expect(a.hashCode, b.hashCode);
+      expect(a, isNot(c));
+    });
+
+    test('GradientBorderSide', () {
+      const a = GradientBorderSide(gradient: gradient, width: 2);
+      const b = GradientBorderSide(gradient: gradient, width: 2);
+      const c = GradientBorderSide(gradient: gradient, width: 3);
+
+      expect(a, b);
+      expect(a.hashCode, b.hashCode);
+      expect(a, isNot(c));
+    });
+
+    test('DecoratedOutlinedBorder', () {
+      DecoratedOutlinedBorder build({double blur = 4}) {
+        return DecoratedOutlinedBorder(
+          shadow: [GradientShadow(gradient: gradient, blurRadius: blur)],
+          backgroundGradient: gradient,
+          child: const RoundedRectangleBorder(),
+        );
+      }
+
+      expect(build(), build());
+      expect(build().hashCode, build().hashCode);
+      expect(build(), isNot(build(blur: 5)));
+    });
+
+    test('DecoratedInputBorder', () {
+      DecoratedInputBorder build({bool clipInner = true}) {
+        return DecoratedInputBorder(
+          shadow: const [GradientShadow(gradient: gradient, blurRadius: 4)],
+          clipInner: clipInner,
+          child: const OutlineInputBorder(),
+        );
+      }
+
+      expect(build(), build());
+      expect(build().hashCode, build().hashCode);
+      expect(build(), isNot(build(clipInner: false)));
+    });
+  });
+
   group('DecoratedInputBorder keeps isOutline while interpolating', () {
     // `UnderlineInputBorder.isOutline` is false; override it to true.
     final a = DecoratedInputBorder(
