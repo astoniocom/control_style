@@ -138,6 +138,8 @@ mixin DecorationPainter on ShapeBorder {
     GradientBorderSide side, {
     TextDirection? textDirection,
   }) {
+    if (side.isNone) return;
+
     final innerPath = getInnerPath(rect, textDirection: textDirection);
     final outerPath = getOuterPath(rect, textDirection: textDirection);
 

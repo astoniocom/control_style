@@ -441,6 +441,40 @@ void main() {
     });
   });
 
+  group('paintBorder2', () {
+    int drawPathCalls(GradientBorderSide side) {
+      final canvas = TestRecordingCanvas();
+      DecoratedOutlinedBorder(
+        borderGradient: side,
+        child: const RoundedRectangleBorder(),
+      ).paintBorder2(canvas, _shapeRect, side);
+      return canvas.invocations
+          .where((i) => i.invocation.memberName == #drawPath)
+          .length;
+    }
+
+    test('draws nothing for a side that is switched off', () {
+      expect(drawPathCalls(GradientBorderSide.none), 0);
+      expect(
+        drawPathCalls(
+          const GradientBorderSide(
+            gradient: _redGradient,
+            width: 2,
+            style: BorderStyle.none,
+          ),
+        ),
+        0,
+      );
+    });
+
+    test('draws a visible side', () {
+      expect(
+        drawPathCalls(const GradientBorderSide(gradient: _redGradient)),
+        1,
+      );
+    });
+  });
+
   group('DecoratedInputBorder keeps isOutline while interpolating', () {
     // `UnderlineInputBorder.isOutline` is false; override it to true.
     final a = DecoratedInputBorder(
