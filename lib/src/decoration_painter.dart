@@ -146,8 +146,12 @@ mixin DecorationPainter on ShapeBorder {
         max(boxShadow.offset.dx.abs(), boxShadow.offset.dy.abs());
   }
 
-  /// Paints the gradient [side] along the edge of the shape, between the paths
-  /// returned by [getOuterPath] and [getInnerPath].
+  /// Paints the gradient [side] along the edge of the shape, filling the area
+  /// between the paths returned by [getOuterPath] and [getInnerPath].
+  ///
+  /// The area is exactly [GradientBorderSide.width] wide because the child's
+  /// side is given that width, see [borderGradient]. Nothing is painted
+  /// outside [getOuterPath].
   ///
   /// This is meant to be called after painting the [child], so the gradient
   /// covers the child's (transparent) side. Does nothing if [side] is
@@ -163,7 +167,12 @@ mixin DecorationPainter on ShapeBorder {
     final innerPath = getInnerPath(rect, textDirection: textDirection);
     final outerPath = getOuterPath(rect, textDirection: textDirection);
 
-    final borderPath = outerPath..addPath(innerPath, Offset.zero);
+    // `Path.combine` rather than an even-odd fill: for some borders (e.g.
+    // `UnderlineInputBorder` with rounded top corners) the inner path is not
+    // fully contained in the outer one, and an even-odd fill would leave
+    // slivers where they cross.
+    final borderPath =
+        Path.combine(PathOperation.difference, outerPath, innerPath);
     final paint = side.toPaint(rect, textDirection: textDirection);
     canvas.drawPath(borderPath, paint);
   }

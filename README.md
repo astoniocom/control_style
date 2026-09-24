@@ -320,6 +320,8 @@ Add the `borderGradient` parameter of the `GradientBorderSide` type to `Decorate
 
 When `borderGradient` is set, it replaces the border of the wrapped `child`: the child’s own side becomes transparent and takes the width of the gradient side, so the child’s `color`, `width` and `strokeAlign` are ignored. To draw a single-colour border through the same mechanism, use a gradient of two identical colours.
 
+The gradient side is painted inside the shape, exactly `width` logical pixels wide, like a `BorderSide` with `strokeAlign: BorderSide.strokeAlignInside`.
+
 ``` dart
 TextButton(
   onPressed: () {},
@@ -359,7 +361,7 @@ Buttons (`ButtonStyleButton`), `Checkbox` and `Chip` resolve their border side f
 The following borders have been tested.
 
 Inputs:
-- UnderlineInputBorder (outer shadow, inner shadow and background gradient; `borderGradient` is not supported yet and paints a rectangle around the whole field)
+- UnderlineInputBorder
 - OutlineInputBorder
 
 Buttons:
@@ -368,6 +370,10 @@ Buttons:
 - ContinuousRectangleBorder
 - RoundedRectangleBorder
 - StadiumBorder
+
+## Migration
+
+Upgrading from an older version? See [MIGRATION.md](MIGRATION.md).
 
 ## Issues
 

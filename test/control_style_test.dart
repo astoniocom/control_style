@@ -98,6 +98,71 @@ void main() {
     });
   });
 
+  group('gradient border geometry', () {
+    testWidgets('border is exactly `width` wide and inside the shape', (
+      tester,
+    ) async {
+      await tester.runAsync(() async {
+        final shape = DecoratedOutlinedBorder(
+          borderGradient: const GradientBorderSide(
+            gradient: _redGradient,
+            width: 4,
+          ),
+          child: const RoundedRectangleBorder(),
+        );
+        final image = await _rasterize(shape);
+        const y = 70;
+        // Outside the shape: nothing is painted.
+        expect(_isWhite(await _pixel(image, 18, y)), isTrue);
+        expect(_isWhite(await _pixel(image, 19, y)), isTrue);
+        // Border band: rect.left .. rect.left + width.
+        for (var x = 20; x < 24; x++) {
+          expect(_isRed(await _pixel(image, x, y)), isTrue, reason: 'x=$x');
+        }
+        // Interior: nothing is painted.
+        expect(_isWhite(await _pixel(image, 24, y)), isTrue);
+        expect(_isWhite(await _pixel(image, 25, y)), isTrue);
+      });
+    });
+
+    testWidgets('UnderlineInputBorder paints only the underline', (
+      tester,
+    ) async {
+      await tester.runAsync(() async {
+        final shape = DecoratedInputBorder(
+          borderGradient: const GradientBorderSide(
+            gradient: _redGradient,
+            width: 2,
+          ),
+          child: const UnderlineInputBorder(),
+        );
+        final image = await _rasterize(shape);
+        expect(_isWhite(await _pixel(image, 70, 20)), isTrue, reason: 'top');
+        expect(_isWhite(await _pixel(image, 20, 70)), isTrue, reason: 'left');
+        expect(_isWhite(await _pixel(image, 119, 70)), isTrue, reason: 'right');
+        expect(_isRed(await _pixel(image, 70, 119)), isTrue, reason: 'bottom');
+        expect(_isRed(await _pixel(image, 70, 118)), isTrue, reason: 'bottom');
+        expect(_isWhite(await _pixel(image, 70, 117)), isTrue, reason: 'above');
+        // The rounded top corners of the outer path must not leave slivers.
+        expect(_isWhite(await _pixel(image, 20, 20)), isTrue, reason: 'corner');
+      });
+    });
+
+    test('width 0 paints nothing', () {
+      final canvas = TestRecordingCanvas();
+      const side = GradientBorderSide(gradient: _redGradient, width: 0);
+      DecoratedOutlinedBorder(
+        borderGradient: side,
+        child: const RoundedRectangleBorder(),
+      ).paintGradientBorder(canvas, _shapeRect, side);
+
+      final drawPath = canvas.invocations
+          .singleWhere((i) => i.invocation.memberName == #drawPath);
+      final path = drawPath.invocation.positionalArguments.first as Path;
+      expect(path.getBounds().isEmpty, isTrue);
+    });
+  });
+
   group('DecoratedOutlinedBorder.copyWith(side:)', () {
     test('keeps the side color when there is no gradient border', () {
       final shape = DecoratedOutlinedBorder(

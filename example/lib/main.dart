@@ -29,7 +29,7 @@ class Preset {
     this.innerShadowSpreadRadius = 5,
     this.borderGradient,
     this.backgroundGradient,
-    this.borderWidth = 2,
+    this.borderWidth = 4,
   });
 
   final String name;

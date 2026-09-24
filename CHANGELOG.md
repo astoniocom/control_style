@@ -1,7 +1,16 @@
 ## 0.2.0
 
+See [MIGRATION.md](https://github.com/astoniocom/control_style/blob/master/MIGRATION.md)
+for step-by-step instructions.
+
 Breaking changes:
 
+- The gradient border is painted as a filled band exactly `width` wide, inside
+  the shape. It used to be stroked along both edges, which made it twice as
+  wide and half of it outside the shape, and painted a rectangle around
+  `UnderlineInputBorder`. If you tuned `width` to the old rendering, double it.
+  `GradientBorderSide.toPaint` returns a fill paint; `width: 0` paints nothing
+  instead of a hairline.
 - `DecorationPainter.borderGradient` is declared as non-nullable
   `GradientBorderSide`. Both bundled implementations already returned a
   non-null value. Custom implementations of the mixin must return

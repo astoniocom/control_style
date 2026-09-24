@@ -54,10 +54,13 @@ class GradientBorderSide {
 
   /// The width of this side of the border, in logical pixels.
   ///
-  /// The decorated shape's own side takes this width, so the width also
-  /// affects the shape's [ShapeBorder.dimensions].
+  /// The side is painted inside the shape, between its outer edge and the
+  /// edge inset by [width]. The decorated shape's own side takes this width,
+  /// so the width also affects the shape's [ShapeBorder.dimensions].
   ///
-  /// To omit the border entirely, set the [style] to [BorderStyle.none].
+  /// Unlike [BorderSide.width], a width of 0.0 does not produce a hairline;
+  /// nothing is painted. To omit the border entirely, set the [style] to
+  /// [BorderStyle.none].
   final double width;
 
   /// The style of this side of the border.
@@ -115,15 +118,29 @@ class GradientBorderSide {
     );
   }
 
-  /// Creates a [Paint] object that will draw the line in this border's style.
+  /// Creates a [Paint] object that fills the area of this side with the
+  /// [gradient].
+  ///
+  /// Unlike [BorderSide.toPaint], the returned paint uses
+  /// [PaintingStyle.fill]: the side is painted as the area between the outer
+  /// and the inner path of the shape, not as a stroke along a path. The
+  /// [width] is therefore not represented in the [Paint].
   ///
   /// The [rect] is the area the [gradient] is laid out in. The [textDirection]
   /// is required for gradients that use [AlignmentDirectional].
+  ///
+  /// If [style] is [BorderStyle.none], the paint is fully transparent.
   Paint toPaint(Rect rect, {TextDirection? textDirection}) {
-    final similarBorderSide = BorderSide(width: width, style: style);
-    final paint = similarBorderSide.toPaint()
-      ..shader = gradient.createShader(rect, textDirection: textDirection);
-    return paint;
+    switch (style) {
+      case BorderStyle.solid:
+        return Paint()
+          ..style = PaintingStyle.fill
+          ..shader = gradient.createShader(rect, textDirection: textDirection);
+      case BorderStyle.none:
+        return Paint()
+          ..style = PaintingStyle.fill
+          ..color = const Color(0x00000000);
+    }
   }
 
   @override
