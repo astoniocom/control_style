@@ -3,7 +3,11 @@ import 'dart:ui' as ui show lerpDouble;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-/// A gradient side of a border of a box.
+/// A side of a border of a box that is painted with a [gradient] instead of a
+/// single color.
+///
+/// The counterpart of [BorderSide] for `DecorationPainter.borderGradient`.
+/// Use [none] to switch the gradient side off.
 @immutable
 class GradientBorderSide {
   /// Creates the gradient side of a border.
@@ -50,22 +54,19 @@ class GradientBorderSide {
 
   /// The width of this side of the border, in logical pixels.
   ///
-  /// Setting width to 0.0 will result in a hairline border. This means that
-  /// the border will have the width of one physical pixel. Hairline
-  /// rendering takes shortcuts when the path overlaps a pixel more than once.
-  /// This means that it will render faster than otherwise, but it might
-  /// double-hit pixels, giving it a slightly darker/lighter result.
+  /// The decorated shape's own side takes this width, so the width also
+  /// affects the shape's [ShapeBorder.dimensions].
   ///
   /// To omit the border entirely, set the [style] to [BorderStyle.none].
   final double width;
 
   /// The style of this side of the border.
   ///
-  /// To omit a side, set [style] to [BorderStyle.none]. This skips
-  /// painting the border, but the border still has a [width].
+  /// To omit a side, set [style] to [BorderStyle.none]. This skips painting
+  /// the gradient and leaves the decorated shape's own side untouched.
   final BorderStyle style;
 
-  /// A gradient to use when filling the shape.
+  /// A gradient to use when painting this side.
   final Gradient gradient;
 
   /// Whether this side is not painted, i.e. its [style] is [BorderStyle.none].
@@ -74,8 +75,10 @@ class GradientBorderSide {
   /// non-zero [width] or a custom [gradient] but are switched off via [style].
   bool get isNone => style == BorderStyle.none;
 
-  /// Returns a new gradient border with its width and style scaled by the given
-  /// factor.
+  /// Returns a new gradient side with its [width] and [gradient] scaled by the
+  /// given factor.
+  ///
+  /// A factor of 0.0 or less switches the side off via [style].
   GradientBorderSide scale(double t) {
     return GradientBorderSide(
       gradient: gradient.scale(t),
@@ -84,7 +87,9 @@ class GradientBorderSide {
     );
   }
 
-  /// A hairline transparent border that is not rendered.
+  /// A zero-width transparent side that is not painted.
+  ///
+  /// This is the default for `DecorationPainter.borderGradient`.
   static const GradientBorderSide none = GradientBorderSide(
     width: 0,
     style: BorderStyle.none,
@@ -96,7 +101,7 @@ class GradientBorderSide {
     ),
   );
 
-  /// Creates a copy of this gradient border but with the given fields replaced
+  /// Creates a copy of this gradient side but with the given fields replaced
   /// with the new values.
   GradientBorderSide copyWith({
     Gradient? gradient,

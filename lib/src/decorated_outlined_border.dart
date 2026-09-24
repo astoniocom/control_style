@@ -4,19 +4,21 @@ import 'package:control_style/src/gradient_shadow.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-/// Applies additional decoration to the [OutlinedBorder].
+/// Applies additional decoration to an [OutlinedBorder].
 ///
-/// To decorate [OutlinedBorder], the code:
+/// To decorate an [OutlinedBorder], wrap it into a [DecoratedOutlinedBorder].
+/// For example, the code:
+///
 /// ```dart
 /// MaterialApp(
 ///   theme: ThemeData(
-///     primarySwatch: Colors.blue,
 ///     outlinedButtonTheme: OutlinedButtonThemeData(
-///         style: ElevatedButton.styleFrom(
-///       shape: RoundedRectangleBorder(
-///         borderRadius: BorderRadius.circular(8),
+///       style: OutlinedButton.styleFrom(
+///         shape: RoundedRectangleBorder(
+///           borderRadius: BorderRadius.circular(8),
+///         ),
 ///       ),
-///     )),
+///     ),
 ///   ),
 /// );
 /// ```
@@ -26,29 +28,38 @@ import 'package:flutter/material.dart';
 /// ```dart
 /// MaterialApp(
 ///   theme: ThemeData(
-///     primarySwatch: Colors.blue,
 ///     outlinedButtonTheme: OutlinedButtonThemeData(
-///         style: ElevatedButton.styleFrom(
-///       shape: DecoratedOutlinedBorder(
-///         shadow: const [
-///           BoxShadow(
-///             color: Colors.blue,
-///             blurRadius: 12,
-///           )
-///         ],
-///         child: RoundedRectangleBorder(
-///           borderRadius: BorderRadius.circular(8),
+///       style: OutlinedButton.styleFrom(
+///         shape: DecoratedOutlinedBorder(
+///           shadow: const [
+///             BoxShadow(
+///               color: Colors.blue,
+///               blurRadius: 12,
+///             ),
+///           ],
+///           child: RoundedRectangleBorder(
+///             borderRadius: BorderRadius.circular(8),
+///           ),
 ///         ),
 ///       ),
-///     )),
+///     ),
 ///   ),
 /// );
 /// ```
+///
+/// Note that buttons, [Checkbox] and [Chip] resolve their side from their
+/// style or theme and apply it via [copyWith], which overrides any side set on
+/// the [child]. For example, for an [OutlinedButton] set the side through
+/// [ButtonStyle.side] rather than on the [child].
+///
+/// See [DecorationPainter] for the description of the decoration parameters.
 @immutable
 class DecoratedOutlinedBorder extends OutlinedBorder with DecorationPainter {
-  /// Creates [OutlinedBorder] with additional decoration.
+  /// Creates a decorated [OutlinedBorder].
   ///
-  /// The [child] parameter is the [OutlinedBorder] for the extension.
+  /// The [child] is the [OutlinedBorder] to decorate. If [borderGradient] is
+  /// set, the child's [OutlinedBorder.side] is replaced by a transparent side
+  /// of the gradient's width, see [DecorationPainter.borderGradient].
   DecoratedOutlinedBorder({
     required OutlinedBorder child,
     this.shadow = const [],

@@ -4,9 +4,11 @@ import 'package:control_style/src/gradient_shadow.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-/// Applies additional decoration to the [InputBorder].
+/// Applies additional decoration to an [InputBorder].
 ///
-/// To decorate [InputBorder], the code:
+/// To decorate an [InputBorder], wrap it into a [DecoratedInputBorder]. For
+/// example, the code:
+///
 /// ```dart
 /// MaterialApp(
 ///   theme: ThemeData(
@@ -23,28 +25,34 @@ import 'package:flutter/material.dart';
 ///
 /// ```dart
 /// MaterialApp(
-///    theme: ThemeData(
-///      inputDecorationTheme: InputDecorationTheme(
-///        border: DecoratedInputBorder(
-///          shadow: const [
-///            BoxShadow(
-///              color: Colors.blue,
-///              blurRadius: 12,
-///            )
-///          ],
-///          child: OutlineInputBorder(
-///            borderRadius: BorderRadius.circular(8),
-///          ),
-///        ),
-///      ),
-///    ),
+///   theme: ThemeData(
+///     inputDecorationTheme: InputDecorationTheme(
+///       border: DecoratedInputBorder(
+///         shadow: const [
+///           BoxShadow(
+///             color: Colors.blue,
+///             blurRadius: 12,
+///           ),
+///         ],
+///         child: OutlineInputBorder(
+///           borderRadius: BorderRadius.circular(8),
+///         ),
+///       ),
+///     ),
+///   ),
+/// );
 /// ```
+///
+/// See [DecorationPainter] for the description of the decoration parameters.
 @immutable
 class DecoratedInputBorder extends InputBorder with DecorationPainter {
-  /// Creates a border for an [InputDecorator] by extending the functionality of
-  /// [InputBorder].
+  /// Creates a decorated border for an [InputDecorator].
   ///
-  /// The [child] parameter is [InputBorder] for the extension.
+  /// The [child] is the [InputBorder] to decorate. If [borderGradient] is
+  /// set, the child's [InputBorder.borderSide] is replaced by a transparent
+  /// side of the gradient's width, see [DecorationPainter.borderGradient].
+  ///
+  /// [isOutline] defaults to the child's [InputBorder.isOutline].
   DecoratedInputBorder({
     required InputBorder child,
     this.shadow = const [],

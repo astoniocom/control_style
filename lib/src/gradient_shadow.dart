@@ -3,12 +3,19 @@ import 'dart:ui' as ui show lerpDouble;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-/// A gradient shadow of a border of a box.
+/// A shadow cast by a box that is filled with a [gradient] instead of a single
+/// color.
+///
+/// Differs from [BoxShadow] only in that the shadow is painted with the
+/// [gradient]; the inherited [color] is not used for painting and only takes
+/// part in interpolation with plain [BoxShadow]s.
 @immutable
 class GradientShadow extends BoxShadow {
-  /// Creates the box gradient shadow.
+  /// Creates a gradient box shadow.
   ///
-  /// By default, there is no shadow.
+  /// By default, the shadow has zero [offset], zero [blurRadius], zero
+  /// [spreadRadius] and [BlurStyle.normal], which paints the [gradient]
+  /// exactly along the outline of the box.
   const GradientShadow({
     required this.gradient,
     Color color = Colors.transparent,
@@ -44,6 +51,12 @@ class GradientShadow extends BoxShadow {
   final Gradient gradient;
 
   /// Creates the [Paint] object that corresponds to this shadow description.
+  ///
+  /// Unlike [toPaint], this needs the [rect] the [gradient] is laid out in and,
+  /// for gradients that use [AlignmentDirectional], the [textDirection].
+  ///
+  /// As with [toPaint], the [offset] and [spreadRadius] are not represented in
+  /// the [Paint]; the caller has to inflate and shift the shape accordingly.
   Paint toPaintRect(Rect rect, {TextDirection? textDirection}) {
     final result = Paint()
       ..color = const Color(0xFF000000)

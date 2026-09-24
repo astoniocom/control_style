@@ -10,33 +10,41 @@ mixin DecorationPainter on ShapeBorder {
   /// [ShapeBorder] to which additional styling should be applied.
   ShapeBorder get child;
 
-  /// A list of shadows cast by this shape "behind" it.
+  /// A list of shadows cast by this shape behind itself.
   ///
-  /// The shadows follow the shape of the [child].
+  /// The shadows follow the outline of the [child]. Use [GradientShadow] for
+  /// a gradient shadow and plain [BoxShadow] for a single-color one.
   List<BoxShadow> get shadow;
 
-  /// A list of shadows cast by the boundary of this figure into itself.
+  /// A list of shadows cast by the edge of this shape into its interior.
   ///
-  /// The shadows follow the shape of the [child].
+  /// The shadows follow the outline of the [child]. Use [GradientShadow] for
+  /// a gradient shadow and plain [BoxShadow] for a single-color one.
   List<BoxShadow> get innerShadow;
 
-  /// A gradient to use when filling the shape.
+  /// A gradient to use when filling the interior of the shape.
   Gradient? get backgroundGradient;
 
-  /// A gradient used when drawing the edge of this shape.
+  /// A gradient side used when drawing the edge of this shape.
+  ///
+  /// When set to anything other than [GradientBorderSide.none], it replaces
+  /// the side of the [child]: the child's own side is made transparent and
+  /// its width is set to the width of the gradient side, so the child's
+  /// color, width and stroke alignment are ignored. Use a solid gradient
+  /// (two identical colors) to draw a single-color side through the same
+  /// mechanism.
   GradientBorderSide? get borderGradient;
 
-  /// Whether or not you should cut out the area inside the decorating shape
-  /// to create the effect of placing a shadow behind the shape.
+  /// Whether to cut out the area inside the shape when painting the outer
+  /// [shadow], creating the effect of the shadow being cast behind the shape.
   ///
-  /// The [DecorationPainter] applys stylization above the decorated shape.
-  /// In case of an outer shadow, the shadow’s part above the control is clipped
-  /// (if clipInner is true) to give the illusion that the shadow is behind
-  /// the shape.
+  /// The [DecorationPainter] applies its decoration on top of the layer that
+  /// contains the decorated shape. Without clipping, an outer shadow would
+  /// also cover the interior of the control.
   ///
-  /// ![Exapmle](https://github.com/astoniocom/control_style/raw/master/images/how_it_works.png)
+  /// ![Example](https://github.com/astoniocom/control_style/raw/master/images/how_it_works.png)
   ///
-  /// Usually it should be true.
+  /// Usually this should be true.
   bool get clipInner;
 
   @override
@@ -50,7 +58,11 @@ mixin DecorationPainter on ShapeBorder {
   @override
   EdgeInsetsGeometry get dimensions => child.dimensions;
 
-  /// Paints the decoration on the given [Canvas].
+  /// Paints the [backgroundGradient], [innerShadow] and [shadow] on the given
+  /// [Canvas].
+  ///
+  /// This is meant to be called before painting the [child] itself, so the
+  /// decoration ends up behind the child's outline.
   void paintDecoration(
     Canvas canvas,
     Rect rect, {
@@ -131,8 +143,12 @@ mixin DecorationPainter on ShapeBorder {
         max(boxShadow.offset.dx.abs(), boxShadow.offset.dy.abs());
   }
 
-  /// Paints an additional border on top of the existing one to add the ability
-  /// to decorate this border.
+  /// Paints the gradient [side] along the edge of the shape, between the paths
+  /// returned by [getOuterPath] and [getInnerPath].
+  ///
+  /// This is meant to be called after painting the [child], so the gradient
+  /// covers the child's (transparent) side. Does nothing if [side] is
+  /// switched off, see [GradientBorderSide.isNone].
   void paintBorder2(
     Canvas canvas,
     Rect rect,
