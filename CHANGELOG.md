@@ -8,6 +8,9 @@ Breaking changes:
   `GradientBorderSide.none` instead of `null`; callers can drop `?.` and `!`.
 - `DecorationPainter.paintBorder2`, deprecated in 0.1.2, is removed. Use
   `paintGradientBorder`; the signature is unchanged.
+- Requires Dart 3 (`sdk: ^3.0.0`) and Flutter 3.10 or newer. The previous
+  lower bounds (Dart 2.14, Flutter 1.17) predated APIs the package relies on
+  and were never tested.
 
 ## 0.1.2
 

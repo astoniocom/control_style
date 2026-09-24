@@ -18,18 +18,12 @@ class GradientShadow extends BoxShadow {
   /// exactly along the outline of the box.
   const GradientShadow({
     required this.gradient,
-    Color color = Colors.transparent,
-    Offset offset = Offset.zero,
-    double blurRadius = 0.0,
-    double spreadRadius = 0.0,
-    BlurStyle blurStyle = BlurStyle.normal,
-  }) : super(
-          color: color,
-          offset: offset,
-          blurRadius: blurRadius,
-          spreadRadius: spreadRadius,
-          blurStyle: blurStyle,
-        );
+    super.color = Colors.transparent,
+    super.offset,
+    super.blurRadius,
+    super.spreadRadius,
+    super.blurStyle,
+  });
 
   /// Creates a gradient shadow that looks like the given plain [shadow], using
   /// a solid gradient of the shadow's color.

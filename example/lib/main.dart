@@ -92,7 +92,7 @@ final List<Preset> presets = [
 ];
 
 class MyApp extends StatefulWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -263,8 +263,8 @@ class GradientPicker extends StatelessWidget {
   const GradientPicker({
     required this.onChanged,
     required this.value,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
   final Gradient? value;
   final Function(Gradient?) onChanged;
 

@@ -2,7 +2,7 @@
 /// other controls.
 ///
 /// Live example [astoniocom.github.io](https://astoniocom.github.io/control_style/)
-library control_style;
+library;
 
 export 'src/decorated_input_border.dart';
 export 'src/decorated_outlined_border.dart';
