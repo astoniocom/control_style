@@ -6,93 +6,43 @@
 
 The package requires Dart 3 (`sdk: ^3.0.0`) and Flutter 3.10 or newer.
 
-### Gradient border is painted exactly `width` wide
+### Gradient border width
 
-Up to 0.1.x, `borderGradient` was painted as a stroke along both the outer and
-the inner edge of the shape. The visible band was twice as wide as
-`GradientBorderSide.width` and extended half a `width` outside the shape. With
-`UnderlineInputBorder` it painted a rectangle around the whole field.
+Up to 0.1.x, `borderGradient` was stroked along both edges of the shape, so
+the visible band was twice as wide as `GradientBorderSide.width` and extended
+half a `width` outside the shape. With `UnderlineInputBorder` it painted a
+rectangle around the whole field.
 
-In 0.2.0 the gradient side fills the area between the outer edge of the shape
-and the edge inset by `width`, like a `BorderSide` with
-`strokeAlign: BorderSide.strokeAlignInside`. Nothing is painted outside the
-shape.
-
-If you tuned `width` to the old rendering, double it to keep the same visual
-thickness:
+In 0.2.0 the band is exactly `width` wide and lies inside the shape, like a
+`BorderSide` with the default `strokeAlign`. If you tuned `width` to the old
+rendering, double it. The layout does not change: the child's side already
+used `width` before.
 
 ```dart
-// 0.1.x: painted about 4 px wide, 1 px of it outside the shape.
+// 0.1.x: about 4 px wide, 1 px of it outside the shape.
 GradientBorderSide(gradient: gradient, width: 2)
 
-// 0.2.0: paints 4 px wide, all of it inside the shape.
+// 0.2.0: 4 px wide, all of it inside the shape.
 GradientBorderSide(gradient: gradient, width: 4)
-```
 
-Note that the child's side, and therefore `ShapeBorder.dimensions`, already
-used `width` before, so the layout of the control does not change when you
-double it; only the painted band gets thinner if you do not.
-
-To reproduce the old geometry exactly, including the part outside the shape,
-use the new `strokeAlign` (see below). The old band ran from `width / 2`
-outside the edge to `3 * width / 2` inside, which is a `2 * width` band with
-one quarter of it outside:
-
-```dart
+// 0.2.0: the old geometry exactly, at the cost of a wider `dimensions`.
 GradientBorderSide(gradient: gradient, width: 4, strokeAlign: -0.5)
 ```
 
-This also inflates `dimensions` from 2 to 3 logical pixels, so prefer the
-plain doubling unless the outside part matters.
+`GradientBorderSide.toPaint` returns a `PaintingStyle.fill` paint and a
+`width` of 0 paints nothing instead of a hairline.
 
-### `GradientBorderSide.strokeAlign`
+The gradient border of an `OutlineInputBorder` now leaves the gap for a
+floating label open. If you worked around the covered gap with
+`floatingLabelBehavior: FloatingLabelBehavior.never`, the workaround can be
+removed.
 
-New, optional, defaults to `GradientBorderSide.strokeAlignInside`, which is
-the behaviour described above. It follows `BorderSide.strokeAlign`
-(`strokeAlignInside`, `strokeAlignCenter`, `strokeAlignOutside`, or any value
-in between) and is forwarded to the wrapped child's side, so `dimensions`
-and `getInnerPath` change accordingly. Shapes that ignore
-`BorderSide.strokeAlign`, such as `UnderlineInputBorder`, ignore it as well.
+### Custom `DecorationPainter` implementations
 
-Any value other than the default is painted through a `Canvas.saveLayer`
-mask and is therefore more expensive than the default.
+`borderGradient` is non-nullable; return `GradientBorderSide.none` instead
+of `null`. Callers can drop `?.` and `!`.
 
-### Floating label gap
-
-The gradient border of an `OutlineInputBorder` used to cover the gap of a
-floating label. It now leaves the gap open like the plain border. If you
-worked around this with `floatingLabelBehavior: FloatingLabelBehavior.never`,
-the workaround can be removed. Custom `DecorationPainter` implementations
-should pass `gapStart`, `gapExtent` and `gapPercentage` from
-`InputBorder.paint` to `paintGradientBorder` to get the gap.
-
-`GradientBorderSide.toPaint` now returns a `PaintingStyle.fill` paint; the
-width is not represented in the paint. A `width` of 0 paints nothing instead
-of a hairline.
-
-### `DecorationPainter.borderGradient` is non-nullable
-
-Only affects custom implementations of the `DecorationPainter` mixin.
-
-```dart
-// 0.1.x
-GradientBorderSide? get borderGradient => null;
-
-// 0.2.0
-GradientBorderSide get borderGradient => GradientBorderSide.none;
-```
-
-Callers can drop `?.` and `!` when reading the property.
-
-### `paintBorder2` is removed
-
-Deprecated in 0.1.2. Replace with `paintGradientBorder`; the signature is
-unchanged.
-
-```dart
-// 0.1.x
-paintBorder2(canvas, rect, borderGradient, textDirection: textDirection);
-
-// 0.2.0
-paintGradientBorder(canvas, rect, borderGradient, textDirection: textDirection);
-```
+`paintBorder2`, deprecated in 0.1.2, is removed; call `paintGradientBorder`
+with the same arguments. `InputBorder` implementations should also forward
+`gapStart`, `gapExtent` and `gapPercentage` from `paint` to get the floating
+label gap.
