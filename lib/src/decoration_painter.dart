@@ -167,17 +167,4 @@ mixin DecorationPainter on ShapeBorder {
     final paint = side.toPaint(rect, textDirection: textDirection);
     canvas.drawPath(borderPath, paint);
   }
-
-  /// Deprecated alias of [paintGradientBorder].
-  @Deprecated(
-    'Use paintGradientBorder instead. '
-    'This feature was deprecated after v0.1.2.',
-  )
-  void paintBorder2(
-    Canvas canvas,
-    Rect rect,
-    GradientBorderSide side, {
-    TextDirection? textDirection,
-  }) =>
-      paintGradientBorder(canvas, rect, side, textDirection: textDirection);
 }

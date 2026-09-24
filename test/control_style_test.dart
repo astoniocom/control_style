@@ -481,24 +481,6 @@ void main() {
         1,
       );
     });
-
-    test('deprecated paintBorder2 delegates to it', () {
-      const side = GradientBorderSide(gradient: _redGradient);
-      final canvas = TestRecordingCanvas();
-      DecoratedOutlinedBorder(
-        borderGradient: side,
-        child: const RoundedRectangleBorder(),
-      )
-          // ignore: deprecated_member_use_from_same_package
-          .paintBorder2(canvas, _shapeRect, side);
-
-      expect(
-        canvas.invocations
-            .where((i) => i.invocation.memberName == #drawPath)
-            .length,
-        1,
-      );
-    });
   });
 
   group('borders listed as supported in README', () {

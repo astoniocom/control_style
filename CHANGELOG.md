@@ -6,6 +6,8 @@ Breaking changes:
   `GradientBorderSide`. Both bundled implementations already returned a
   non-null value. Custom implementations of the mixin must return
   `GradientBorderSide.none` instead of `null`; callers can drop `?.` and `!`.
+- `DecorationPainter.paintBorder2`, deprecated in 0.1.2, is removed. Use
+  `paintGradientBorder`; the signature is unchanged.
 
 ## 0.1.2
 
