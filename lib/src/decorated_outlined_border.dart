@@ -136,7 +136,7 @@ class DecoratedOutlinedBorder extends OutlinedBorder with DecorationPainter {
   }
 
   @override
-  OutlinedBorder copyWith({
+  DecoratedOutlinedBorder copyWith({
     BorderSide? side,
     OutlinedBorder? child,
     List<BoxShadow>? shadow,
@@ -154,7 +154,7 @@ class DecoratedOutlinedBorder extends OutlinedBorder with DecorationPainter {
   }
 
   @override
-  ShapeBorder scale(double t) {
+  DecoratedOutlinedBorder scale(double t) {
     final scalledChild = child.scale(t);
     return DecoratedOutlinedBorder(
       child: scalledChild is OutlinedBorder ? scalledChild : child,

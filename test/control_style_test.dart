@@ -105,7 +105,7 @@ void main() {
       );
       const side = BorderSide(color: _red, width: 4);
 
-      final copy = shape.copyWith(side: side) as DecoratedOutlinedBorder;
+      final copy = shape.copyWith(side: side);
 
       expect(copy.child.side, side);
     });
@@ -117,8 +117,7 @@ void main() {
         ),
       );
 
-      final copy =
-          shape.copyWith(side: BorderSide.none) as DecoratedOutlinedBorder;
+      final copy = shape.copyWith(side: BorderSide.none);
 
       expect(copy.child.side, BorderSide.none);
     });
@@ -134,7 +133,7 @@ void main() {
 
       final copy = shape.copyWith(
         side: const BorderSide(color: Colors.blue, width: 4),
-      ) as DecoratedOutlinedBorder;
+      );
 
       expect(copy.child.side.color, Colors.transparent);
       expect(copy.child.side.width, 3);
@@ -211,7 +210,7 @@ void main() {
         child: const RoundedRectangleBorder(),
       );
 
-      final scaled = shape.scale(0.5) as DecoratedOutlinedBorder;
+      final scaled = shape.scale(0.5);
 
       expect(scaled.shadow.single, isA<GradientShadow>());
       expect(scaled.innerShadow.single, isA<GradientShadow>());

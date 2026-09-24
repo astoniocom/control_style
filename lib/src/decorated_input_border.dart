@@ -141,7 +141,7 @@ class DecoratedInputBorder extends InputBorder with DecorationPainter {
   }
 
   @override
-  InputBorder copyWith({
+  DecoratedInputBorder copyWith({
     BorderSide? borderSide,
     InputBorder? child,
     List<BoxShadow>? shadow,
@@ -163,7 +163,7 @@ class DecoratedInputBorder extends InputBorder with DecorationPainter {
   }
 
   @override
-  ShapeBorder scale(double t) {
+  DecoratedInputBorder scale(double t) {
     final scalledChild = child.scale(t);
 
     return DecoratedInputBorder(
