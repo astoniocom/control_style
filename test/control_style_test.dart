@@ -148,6 +148,74 @@ void main() {
       });
     });
 
+    testWidgets('strokeAlignCenter straddles the edge', (tester) async {
+      await tester.runAsync(() async {
+        final shape = DecoratedOutlinedBorder(
+          borderGradient: const GradientBorderSide(
+            gradient: _redGradient,
+            width: 4,
+            strokeAlign: GradientBorderSide.strokeAlignCenter,
+          ),
+          child: const RoundedRectangleBorder(),
+        );
+        final image = await _rasterize(shape);
+        const y = 70;
+        expect(_isWhite(await _pixel(image, 17, y)), isTrue);
+        // rect.left - 2 .. rect.left + 2
+        for (var x = 18; x < 22; x++) {
+          expect(_isRed(await _pixel(image, x, y)), isTrue, reason: 'x=$x');
+        }
+        expect(_isWhite(await _pixel(image, 22, y)), isTrue);
+      });
+    });
+
+    testWidgets('strokeAlignOutside lies entirely outside', (tester) async {
+      await tester.runAsync(() async {
+        final shape = DecoratedOutlinedBorder(
+          borderGradient: const GradientBorderSide(
+            gradient: _redGradient,
+            width: 4,
+            strokeAlign: GradientBorderSide.strokeAlignOutside,
+          ),
+          child: const RoundedRectangleBorder(),
+        );
+        final image = await _rasterize(shape);
+        const y = 70;
+        expect(_isWhite(await _pixel(image, 15, y)), isTrue);
+        // rect.left - 4 .. rect.left
+        for (var x = 16; x < 20; x++) {
+          expect(_isRed(await _pixel(image, x, y)), isTrue, reason: 'x=$x');
+        }
+        expect(_isWhite(await _pixel(image, 20, y)), isTrue);
+        expect(_isWhite(await _pixel(image, 21, y)), isTrue);
+      });
+    });
+
+    test('strokeAlign is forwarded to the child side and dimensions', () {
+      const side = GradientBorderSide(
+        gradient: _redGradient,
+        width: 4,
+        strokeAlign: GradientBorderSide.strokeAlignCenter,
+      );
+      final outlined = DecoratedOutlinedBorder(
+        borderGradient: side,
+        child: const RoundedRectangleBorder(),
+      );
+      expect(outlined.child.side.strokeAlign, BorderSide.strokeAlignCenter);
+      expect(outlined.dimensions, const EdgeInsets.all(2));
+      expect(
+        outlined.getInnerPath(_shapeRect).getBounds(),
+        _shapeRect.deflate(2),
+      );
+
+      final input = DecoratedInputBorder(
+        borderGradient: side,
+        child: const OutlineInputBorder(),
+      );
+      expect(input.child.borderSide.strokeAlign, BorderSide.strokeAlignCenter);
+      expect(input.dimensions, const EdgeInsets.all(2));
+    });
+
     test('width 0 paints nothing', () {
       final canvas = TestRecordingCanvas();
       const side = GradientBorderSide(gradient: _redGradient, width: 0);
@@ -511,6 +579,52 @@ void main() {
 
       expect(result.style, BorderStyle.solid);
       expect(colorAt(result).a, closeTo(0.5, 0.01));
+    });
+  });
+
+  group('GradientBorderSide.strokeAlign', () {
+    const inside = GradientBorderSide(gradient: _redGradient, width: 4);
+    const outside = GradientBorderSide(
+      gradient: _redGradient,
+      width: 4,
+      strokeAlign: GradientBorderSide.strokeAlignOutside,
+    );
+
+    test('defaults to inside and matches BorderSide constants', () {
+      expect(inside.strokeAlign, BorderSide.strokeAlignInside);
+      expect(GradientBorderSide.none.strokeAlign, BorderSide.strokeAlignInside);
+      expect(
+        GradientBorderSide.strokeAlignCenter,
+        BorderSide.strokeAlignCenter,
+      );
+      expect(
+        GradientBorderSide.strokeAlignOutside,
+        BorderSide.strokeAlignOutside,
+      );
+    });
+
+    test('strokeInset and strokeOutset', () {
+      expect(inside.strokeInset, 4);
+      expect(inside.strokeOutset, 0);
+      expect(outside.strokeInset, 0);
+      expect(outside.strokeOutset, 4);
+      final center = inside.copyWith(
+        strokeAlign: GradientBorderSide.strokeAlignCenter,
+      );
+      expect(center.strokeInset, 2);
+      expect(center.strokeOutset, 2);
+    });
+
+    test('is interpolated, scaled, copied and compared', () {
+      expect(GradientBorderSide.lerp(inside, outside, 0.5).strokeAlign, 0);
+      expect(outside.scale(0.5).strokeAlign, outside.strokeAlign);
+      expect(
+        inside.copyWith(strokeAlign: GradientBorderSide.strokeAlignOutside),
+        outside,
+      );
+      expect(inside, isNot(outside));
+      expect(inside.hashCode, isNot(outside.hashCode));
+      expect(outside.toString(), contains('strokeAlign: 1.0'));
     });
   });
 

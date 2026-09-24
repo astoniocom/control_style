@@ -59,7 +59,8 @@ class DecoratedOutlinedBorder extends OutlinedBorder with DecorationPainter {
   ///
   /// The [child] is the [OutlinedBorder] to decorate. If [borderGradient] is
   /// set, the child's [OutlinedBorder.side] is replaced by a transparent side
-  /// of the gradient's width, see [DecorationPainter.borderGradient].
+  /// of the gradient's width and stroke alignment, see
+  /// [DecorationPainter.borderGradient].
   DecoratedOutlinedBorder({
     required OutlinedBorder child,
     this.shadow = const [],
@@ -73,6 +74,7 @@ class DecoratedOutlinedBorder extends OutlinedBorder with DecorationPainter {
               : BorderSide(
                   width: borderGradient.width,
                   color: Colors.transparent,
+                  strokeAlign: borderGradient.strokeAlign,
                 ),
         ),
         super(side: child.side);

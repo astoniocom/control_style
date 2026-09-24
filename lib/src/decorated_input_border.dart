@@ -50,7 +50,8 @@ class DecoratedInputBorder extends InputBorder with DecorationPainter {
   ///
   /// The [child] is the [InputBorder] to decorate. If [borderGradient] is
   /// set, the child's [InputBorder.borderSide] is replaced by a transparent
-  /// side of the gradient's width, see [DecorationPainter.borderGradient].
+  /// side of the gradient's width and stroke alignment, see
+  /// [DecorationPainter.borderGradient].
   ///
   /// [isOutline] defaults to the child's [InputBorder.isOutline].
   DecoratedInputBorder({
@@ -68,6 +69,7 @@ class DecoratedInputBorder extends InputBorder with DecorationPainter {
               : BorderSide(
                   width: borderGradient.width,
                   color: Colors.transparent,
+                  strokeAlign: borderGradient.strokeAlign,
                 ),
         ),
         super(borderSide: child.borderSide);

@@ -32,10 +32,10 @@ mixin DecorationPainter on ShapeBorder {
   ///
   /// When set to anything other than [GradientBorderSide.none], it replaces
   /// the side of the [child]: the child's own side is made transparent and
-  /// its width is set to the width of the gradient side, so the child's
-  /// color, width and stroke alignment are ignored. Use a solid gradient
-  /// (two identical colors) to draw a single-color side through the same
-  /// mechanism.
+  /// its width and stroke alignment are set to those of the gradient side, so
+  /// the child's color, width and stroke alignment are ignored. Use a solid
+  /// gradient (two identical colors) to draw a single-color side through the
+  /// same mechanism.
   GradientBorderSide get borderGradient;
 
   /// Whether to cut out the area inside the shape when painting the outer
@@ -147,11 +147,13 @@ mixin DecorationPainter on ShapeBorder {
   }
 
   /// Paints the gradient [side] along the edge of the shape, filling the area
-  /// between the paths returned by [getOuterPath] and [getInnerPath].
+  /// between [getInnerPath] of [rect] and [getOuterPath] of [rect] inflated
+  /// by [GradientBorderSide.strokeOutset].
   ///
   /// The area is exactly [GradientBorderSide.width] wide because the child's
-  /// side is given that width, see [borderGradient]. Nothing is painted
-  /// outside [getOuterPath].
+  /// side is given that width and [GradientBorderSide.strokeAlign], see
+  /// [borderGradient]. With the default alignment nothing is painted outside
+  /// [getOuterPath].
   ///
   /// This is meant to be called after painting the [child], so the gradient
   /// covers the child's (transparent) side. Does nothing if [side] is
@@ -165,7 +167,10 @@ mixin DecorationPainter on ShapeBorder {
     if (side.isNone) return;
 
     final innerPath = getInnerPath(rect, textDirection: textDirection);
-    final outerPath = getOuterPath(rect, textDirection: textDirection);
+    final outerPath = getOuterPath(
+      rect.inflate(side.strokeOutset),
+      textDirection: textDirection,
+    );
 
     // `Path.combine` rather than an even-odd fill: for some borders (e.g.
     // `UnderlineInputBorder` with rounded top corners) the inner path is not

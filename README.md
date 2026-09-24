@@ -318,9 +318,9 @@ TextButton(
 
 Add the `borderGradient` parameter of the `GradientBorderSide` type to `DecoratedInputBorder` or `DecoratedOutlinedBorder`. `GradientBorderSide` differs from Flutter’s `BorderSide` in that it uses the `gradient` parameter instead of `color`.
 
-When `borderGradient` is set, it replaces the border of the wrapped `child`: the child’s own side becomes transparent and takes the width of the gradient side, so the child’s `color`, `width` and `strokeAlign` are ignored. To draw a single-colour border through the same mechanism, use a gradient of two identical colours.
+When `borderGradient` is set, it replaces the border of the wrapped `child`: the child’s own side becomes transparent and takes the `width` and `strokeAlign` of the gradient side, so the child’s `color`, `width` and `strokeAlign` are ignored. To draw a single-colour border through the same mechanism, use a gradient of two identical colours.
 
-The gradient side is painted inside the shape, exactly `width` logical pixels wide, like a `BorderSide` with `strokeAlign: BorderSide.strokeAlignInside`.
+The gradient side is painted as a band exactly `width` logical pixels wide. `strokeAlign` works like `BorderSide.strokeAlign`: `GradientBorderSide.strokeAlignInside` (the default) keeps the band inside the shape, `strokeAlignCenter` centres it on the edge, `strokeAlignOutside` puts it outside. Keep the default for shapes that ignore `BorderSide.strokeAlign`, such as `UnderlineInputBorder`.
 
 ``` dart
 TextButton(

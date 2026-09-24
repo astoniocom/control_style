@@ -33,6 +33,28 @@ Note that the child's side, and therefore `ShapeBorder.dimensions`, already
 used `width` before, so the layout of the control does not change when you
 double it; only the painted band gets thinner if you do not.
 
+To reproduce the old geometry exactly, including the part outside the shape,
+use the new `strokeAlign` (see below). The old band ran from `width / 2`
+outside the edge to `3 * width / 2` inside, which is a `2 * width` band with
+one quarter of it outside:
+
+```dart
+GradientBorderSide(gradient: gradient, width: 4, strokeAlign: -0.5)
+```
+
+This also inflates `dimensions` from 2 to 3 logical pixels, so prefer the
+plain doubling unless the outside part matters.
+
+### `GradientBorderSide.strokeAlign`
+
+New, optional, defaults to `GradientBorderSide.strokeAlignInside`, which is
+the behaviour described above. It follows `BorderSide.strokeAlign`
+(`strokeAlignInside`, `strokeAlignCenter`, `strokeAlignOutside`, or any value
+in between) and is forwarded to the wrapped child's side, so `dimensions`
+and `getInnerPath` change accordingly. Shapes that ignore
+`BorderSide.strokeAlign`, such as `UnderlineInputBorder`, should keep the
+default.
+
 `GradientBorderSide.toPaint` now returns a `PaintingStyle.fill` paint; the
 width is not represented in the paint. A `width` of 0 paints nothing instead
 of a hairline.

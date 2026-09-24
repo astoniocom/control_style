@@ -12,11 +12,13 @@ import 'package:flutter/material.dart';
 class GradientBorderSide {
   /// Creates the gradient side of a border.
   ///
-  /// By default, the border is 1.0 logical pixels wide and solid.
+  /// By default, the border is 1.0 logical pixels wide, solid and painted
+  /// inside the shape.
   const GradientBorderSide({
     required this.gradient,
     this.width = 1.0,
     this.style = BorderStyle.solid,
+    this.strokeAlign = strokeAlignInside,
   });
 
   /// Linearly interpolate between two gradient border sides.
@@ -37,11 +39,13 @@ class GradientBorderSide {
     if (t == 1.0) return b;
     final width = ui.lerpDouble(a.width, b.width, t)!;
     if (width < 0.0) return GradientBorderSide.none;
+    final strokeAlign = ui.lerpDouble(a.strokeAlign, b.strokeAlign, t)!;
     if (a.style == b.style) {
       return GradientBorderSide(
         gradient: Gradient.lerp(a.gradient, b.gradient, t)!,
         width: width,
         style: a.style, // == b.style
+        strokeAlign: strokeAlign,
       );
     }
     final gradientA = a.isNone ? a.gradient.scale(0) : a.gradient;
@@ -49,14 +53,16 @@ class GradientBorderSide {
     return GradientBorderSide(
       gradient: Gradient.lerp(gradientA, gradientB, t)!,
       width: width,
+      strokeAlign: strokeAlign,
     );
   }
 
   /// The width of this side of the border, in logical pixels.
   ///
-  /// The side is painted inside the shape, between its outer edge and the
-  /// edge inset by [width]. The decorated shape's own side takes this width,
-  /// so the width also affects the shape's [ShapeBorder.dimensions].
+  /// The side is painted as a band exactly this wide along the edge of the
+  /// shape; [strokeAlign] controls how much of it lies inside the shape. The
+  /// decorated shape's own side takes this width, so the width also affects
+  /// the shape's [ShapeBorder.dimensions].
   ///
   /// Unlike [BorderSide.width], a width of 0.0 does not produce a hairline;
   /// nothing is painted. To omit the border entirely, set the [style] to
@@ -72,6 +78,58 @@ class GradientBorderSide {
   /// A gradient to use when painting this side.
   final Gradient gradient;
 
+  /// The relative position of the band of this side to the edge of the shape.
+  ///
+  /// Same semantics as [BorderSide.strokeAlign]: [strokeAlignInside] (-1.0,
+  /// the default) keeps the whole [width] inside the shape,
+  /// [strokeAlignCenter] (0.0) centers it on the edge, [strokeAlignOutside]
+  /// (1.0) puts it entirely outside. Values in between are allowed.
+  ///
+  /// The decorated shape's own side takes this alignment together with the
+  /// [width], so [ShapeBorder.dimensions] and [ShapeBorder.getInnerPath]
+  /// follow it the same way they do for a plain [BorderSide]. The band is
+  /// painted between [ShapeBorder.getInnerPath] of the shape's rect and
+  /// [ShapeBorder.getOuterPath] of that rect inflated by [strokeOutset].
+  ///
+  /// Two limitations compared to a stroked [BorderSide]:
+  ///
+  /// * Shapes that ignore [BorderSide.strokeAlign], such as
+  ///   [UnderlineInputBorder], also do not restrict where the outside part of
+  ///   the band is painted. Keep the default for them.
+  /// * For rounded shapes the outside part is not concentric with the edge
+  ///   (the corner radius does not grow with [strokeOutset]), so the band is
+  ///   slightly wider at the corners.
+  final double strokeAlign;
+
+  /// The border is drawn fully inside of the border path.
+  ///
+  /// This is the default and is the same as [BorderSide.strokeAlignInside].
+  static const double strokeAlignInside = BorderSide.strokeAlignInside;
+
+  /// The border is drawn on the center of the border path, with half of the
+  /// [width] on the inside, and the other half on the outside of the path.
+  ///
+  /// Same as [BorderSide.strokeAlignCenter].
+  static const double strokeAlignCenter = BorderSide.strokeAlignCenter;
+
+  /// The border is drawn on the outside of the border path.
+  ///
+  /// Same as [BorderSide.strokeAlignOutside].
+  static const double strokeAlignOutside = BorderSide.strokeAlignOutside;
+
+  /// Get the amount of the stroke width that lies inside of the shape.
+  ///
+  /// For example, this will return the [width] for a [strokeAlign] of -1, half
+  /// the [width] for a [strokeAlign] of 0, and 0 for a [strokeAlign] of 1.
+  double get strokeInset => width * (1 - (1 + strokeAlign) / 2);
+
+  /// Get the amount of the stroke width that lies outside of the shape.
+  ///
+  /// For example, this will return 0 for a [strokeAlign] of -1, half the
+  /// [width] for a [strokeAlign] of 0, and the [width] for a [strokeAlign] of
+  /// 1.
+  double get strokeOutset => width * (1 + strokeAlign) / 2;
+
   /// Whether this side is not painted, i.e. its [style] is [BorderStyle.none].
   ///
   /// Unlike comparing against [none], this also covers sides that have a
@@ -81,12 +139,14 @@ class GradientBorderSide {
   /// Returns a new gradient side with its [width] and [gradient] scaled by the
   /// given factor.
   ///
-  /// A factor of 0.0 or less switches the side off via [style].
+  /// A factor of 0.0 or less switches the side off via [style]. The
+  /// [strokeAlign] is kept.
   GradientBorderSide scale(double t) {
     return GradientBorderSide(
       gradient: gradient.scale(t),
       width: math.max(0, width * t),
       style: t <= 0.0 ? BorderStyle.none : style,
+      strokeAlign: strokeAlign,
     );
   }
 
@@ -110,11 +170,13 @@ class GradientBorderSide {
     Gradient? gradient,
     double? width,
     BorderStyle? style,
+    double? strokeAlign,
   }) {
     return GradientBorderSide(
       gradient: gradient ?? this.gradient,
       width: width ?? this.width,
       style: style ?? this.style,
+      strokeAlign: strokeAlign ?? this.strokeAlign,
     );
   }
 
@@ -150,13 +212,15 @@ class GradientBorderSide {
     return other is GradientBorderSide &&
         other.width == width &&
         other.style == style &&
-        other.gradient == gradient;
+        other.gradient == gradient &&
+        other.strokeAlign == strokeAlign;
   }
 
   @override
-  int get hashCode => Object.hash(gradient, width, style);
+  int get hashCode => Object.hash(gradient, width, style, strokeAlign);
 
   @override
   String toString() => '${objectRuntimeType(this, 'GradientBorderSide')}('
-      '${width.toStringAsFixed(1)}, $style, $gradient)';
+      '${width.toStringAsFixed(1)}, $style, $gradient, '
+      'strokeAlign: ${strokeAlign.toStringAsFixed(1)})';
 }

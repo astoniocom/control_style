@@ -21,6 +21,15 @@ Breaking changes:
   lower bounds (Dart 2.14, Flutter 1.17) predated APIs the package relies on
   and were never tested.
 
+New features:
+
+- `GradientBorderSide.strokeAlign` with the same semantics and constants as
+  `BorderSide.strokeAlign` (`strokeAlignInside`, the default, `strokeAlignCenter`,
+  `strokeAlignOutside`), plus `strokeInset` and `strokeOutset`. The alignment
+  is forwarded to the decorated shape's side, so `dimensions` and
+  `getInnerPath` follow it. Shapes that ignore `BorderSide.strokeAlign`
+  (`UnderlineInputBorder`) should keep the default.
+
 ## 0.1.2
 
 Bug fixes:
