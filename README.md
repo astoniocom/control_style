@@ -11,7 +11,7 @@ In addition, this approach works incorrectly when you are adding shadows to text
 ![Container issue](images/container.png)
 
 
-This package helps to solve the aforementioned problem. It provides the most common customisation features for control elements which have `shape` field such as buttons, text fields, `Card`, `Chip`, `Checkbox`, `Dialog`, `Drawer`, inks, `ListTile`, `Material`, `NavigationBar`.
+This package helps to solve the aforementioned problem. It provides the most common customisation features for control elements which have a `shape` field such as buttons, text fields, `Card`, `Chip`, `Checkbox`, `Dialog`, `Drawer`, inks, `ListTile`, `Material`, `NavigationBar`.
 
 The package provides the same customisation parameters to all controls, which allows for identically decorating any of the controls.
 
@@ -99,9 +99,8 @@ Hence, this code:
 ``` dart
     MaterialApp(
       theme: ThemeData(
-        primarySwatch: Colors.blue,
         outlinedButtonTheme: OutlinedButtonThemeData(
-            style: ElevatedButton.styleFrom(
+            style: OutlinedButton.styleFrom(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
           ),
@@ -115,9 +114,8 @@ should be updated to:
 ``` dart
     MaterialApp(
       theme: ThemeData(
-        primarySwatch: Colors.blue,
         outlinedButtonTheme: OutlinedButtonThemeData(
-            style: ElevatedButton.styleFrom(
+            style: OutlinedButton.styleFrom(
           shape: DecoratedOutlinedBorder(
             shadow: const [
               BoxShadow(
@@ -136,7 +134,7 @@ should be updated to:
 
 The examples above show how to decorate all the controls at once. 
 
-In case you need to decorate separate element, you need to configure its styles:
+In case you need to decorate a separate element, you need to configure its styles:
 
 ``` dart
     TextField(
@@ -184,11 +182,11 @@ TextButton(
   onPressed: () {},
   child: const Text("Text button"),
   style: ButtonStyle(
-    shape: MaterialStateProperty.resolveWith((states) {
+    shape: WidgetStateProperty.resolveWith((states) {
       return DecoratedOutlinedBorder(
         shadow: [
           GradientShadow(
-            gradient: states.contains(MaterialState.pressed)
+            gradient: states.contains(WidgetState.pressed)
                 ? const LinearGradient(colors: [Colors.red, Colors.green, Colors.cyan])
                 : const LinearGradient(colors: [Colors.blue, Colors.blue]),
             blurRadius: 12,
@@ -199,7 +197,7 @@ TextButton(
     }),
   ),
 )
-````
+```
 
 ![Animation](images/animation.gif)
 
@@ -304,9 +302,9 @@ TextButton(
   onPressed: () {},
   child: const Text("Text button"),
   style: ButtonStyle(
-    shape: MaterialStateProperty.resolveWith((states) {
+    shape: WidgetStateProperty.resolveWith((states) {
       return DecoratedOutlinedBorder(
-        backgroundGradient: LinearGradient(colors: [Colors.blue.withOpacity(0.5), Colors.blue.withOpacity(0.2)]),
+        backgroundGradient: LinearGradient(colors: [Colors.blue.withValues(alpha: 0.5), Colors.blue.withValues(alpha: 0.2)]),
         child: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       );
     }),
@@ -318,14 +316,16 @@ TextButton(
 
 ### Border
 
-Add the `borderGradient` or `GradientBorderSide` parameter to `DecoratedInputBorder` or `DecoratedOutlinedBorder`. This parameters differ from the Flutter’ `BorderSide` in that they use `gradient` parameter instead of `color`.
+Add the `borderGradient` parameter of the `GradientBorderSide` type to `DecoratedInputBorder` or `DecoratedOutlinedBorder`. `GradientBorderSide` differs from Flutter’s `BorderSide` in that it uses the `gradient` parameter instead of `color`.
+
+When `borderGradient` is set, it replaces the border of the wrapped `child`: the child’s own side becomes transparent and takes the width of the gradient side, so the child’s `color`, `width` and `strokeAlign` are ignored. To draw a single-colour border through the same mechanism, use a gradient of two identical colours.
 
 ``` dart
 TextButton(
   onPressed: () {},
   child: const Text("Text button"),
   style: ButtonStyle(
-    shape: MaterialStateProperty.resolveWith((states) {
+    shape: WidgetStateProperty.resolveWith((states) {
       return DecoratedOutlinedBorder(
         borderGradient: const GradientBorderSide(
           gradient: LinearGradient(colors: [Colors.red, Colors.green, Colors.blue]),
@@ -340,22 +340,26 @@ TextButton(
 
 ![Gradient border](images/gradient_border.png)
 
-## BorderShadow in Detail
+## How It Works
 
-The wrappers `DecoratedInputBorder` and `DecoratedOutlinedBorder` reach an element’s border through the `child` parameter and apply stylization above the default border of this element. In case of an outer shadow, the shadow’s part above the control then gets cut off in order to create an illusion of the shadow being located behind the control.
+The wrappers `DecoratedInputBorder` and `DecoratedOutlinedBorder` receive an element’s border through the `child` parameter and paint the decoration together with that border. In case of an outer shadow, the shadow’s part above the control is cut off in order to create an illusion of the shadow being located behind the control. This is controlled by the `clipInner` parameter (`true` by default); set it to `false` if you want the shadow to be painted over the interior as well.
 
 ![how it works](images/how_it_works.png)
 
-Decorative styles are applied above the layer that contains an element’s border. Hence, when it comes to buttons, such stylisation overlaps the inner area of an element. Using transparent colours hence used to address this issue. This limitation is due to Flutter itself.
+Decorative styles are painted on the layer that contains an element’s border. Hence, when it comes to buttons, the background gradient and the inner shadow overlap the inner area of the element. Use transparent colours to work around this. This limitation is due to Flutter itself.
 
 ![Background overlap issue](images/background_overlap_issue.png)
+
+### Border side of buttons, checkboxes and chips
+
+Buttons (`ButtonStyleButton`), `Checkbox` and `Chip` resolve their border side from their style or theme and apply it to the shape with `copyWith(side:)`, which overrides any `side` set on the wrapped `child`. For these controls set the side through the style, for example `OutlinedButton.styleFrom(side: ...)`, not on the `child` shape. This is Flutter behaviour and applies to plain `RoundedRectangleBorder` as well.
 
 ## Compatibility
 
 The following borders have been tested.
 
 Inputs:
-- UnderlineInputBorder
+- UnderlineInputBorder (outer shadow, inner shadow and background gradient; `borderGradient` is not supported yet and paints a rectangle around the whole field)
 - OutlineInputBorder
 
 Buttons:
