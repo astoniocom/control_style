@@ -5,7 +5,7 @@ void main() {
   runApp(const MyApp());
 }
 
-enum BorderType { rounded, beveld, continuous, stadium }
+enum BorderType { rounded, beveled, continuous, stadium }
 
 const defaultGradient = LinearGradient(colors: []);
 
@@ -106,7 +106,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     final outlinedBorders = {
       BorderType.rounded: RoundedRectangleBorder(borderRadius: BorderRadius.circular(preset.borderRadius)),
-      BorderType.beveld: BeveledRectangleBorder(borderRadius: BorderRadius.circular(preset.borderRadius)),
+      BorderType.beveled: BeveledRectangleBorder(borderRadius: BorderRadius.circular(preset.borderRadius)),
       BorderType.continuous: ContinuousRectangleBorder(borderRadius: BorderRadius.circular(preset.borderRadius)),
       BorderType.stadium: const StadiumBorder(),
     };
@@ -166,7 +166,7 @@ class _MyAppState extends State<MyApp> {
                             final curBorderIndex = outlinedBorders.keys.toList().indexOf(borderType);
                             borderType = outlinedBorders.keys.toList()[(curBorderIndex + 1) % outlinedBorders.length];
                           }),
-                      child: Text("${borderType.name} border exapmle")),
+                      child: Text("${borderType.name} border example")),
                   const SizedBox(height: 42),
                   const TextField(
                     decoration: InputDecoration(
