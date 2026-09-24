@@ -412,6 +412,35 @@ void main() {
     });
   });
 
+  group('GradientBorderSide.lerp with different styles', () {
+    const visible = GradientBorderSide(
+      gradient: LinearGradient(colors: [_red, _red]),
+      width: 4,
+    );
+    const hidden = GradientBorderSide(
+      gradient: LinearGradient(colors: [Colors.blue, Colors.blue]),
+      width: 4,
+      style: BorderStyle.none,
+    );
+
+    Color colorAt(GradientBorderSide side) =>
+        (side.gradient as LinearGradient).colors.first;
+
+    test('fades in from a hidden side', () {
+      final result = GradientBorderSide.lerp(hidden, visible, 0.5);
+
+      expect(result.style, BorderStyle.solid);
+      expect(colorAt(result).a, closeTo(0.5, 0.01));
+    });
+
+    test('fades out to a hidden side', () {
+      final result = GradientBorderSide.lerp(visible, hidden, 0.5);
+
+      expect(result.style, BorderStyle.solid);
+      expect(colorAt(result).a, closeTo(0.5, 0.01));
+    });
+  });
+
   group('DecoratedInputBorder keeps isOutline while interpolating', () {
     // `UnderlineInputBorder.isOutline` is false; override it to true.
     final a = DecoratedInputBorder(

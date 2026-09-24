@@ -17,7 +17,10 @@ class GradientBorderSide {
 
   /// Linearly interpolate between two gradient border sides.
   ///
-  /// The arguments must not be null.
+  /// If the sides differ in [style], the side with [BorderStyle.none] is
+  /// treated as a solid side with a fully transparent gradient, so the visible
+  /// side fades in or out instead of switching abruptly. This mirrors
+  /// [BorderSide.lerp].
   factory GradientBorderSide.lerp(
     GradientBorderSide a,
     GradientBorderSide b,
@@ -37,8 +40,10 @@ class GradientBorderSide {
         style: a.style, // == b.style
       );
     }
+    final gradientA = a.isNone ? a.gradient.scale(0) : a.gradient;
+    final gradientB = b.isNone ? b.gradient.scale(0) : b.gradient;
     return GradientBorderSide(
-      gradient: Gradient.lerp(a.gradient, b.gradient, t)!,
+      gradient: Gradient.lerp(gradientA, gradientB, t)!,
       width: width,
     );
   }
