@@ -96,6 +96,7 @@ class DecoratedInputBorder extends InputBorder with DecorationPainter {
               Gradient.lerp(a.backgroundGradient, backgroundGradient, t),
           borderGradient:
               GradientBorderSide.lerp(a.borderGradient, borderGradient, t),
+          isOutline: isOutline,
           clipInner: clipInner,
         );
       }
@@ -117,6 +118,7 @@ class DecoratedInputBorder extends InputBorder with DecorationPainter {
               Gradient.lerp(backgroundGradient, b.backgroundGradient, t),
           borderGradient:
               GradientBorderSide.lerp(borderGradient, b.borderGradient, t),
+          isOutline: isOutline,
           clipInner: clipInner,
         );
       }

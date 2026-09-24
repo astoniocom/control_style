@@ -289,4 +289,35 @@ void main() {
       });
     });
   });
+
+  group('DecoratedInputBorder keeps isOutline while interpolating', () {
+    // `UnderlineInputBorder.isOutline` is false; override it to true.
+    final a = DecoratedInputBorder(
+      isOutline: true,
+      child: const UnderlineInputBorder(),
+    );
+    final b = DecoratedInputBorder(
+      isOutline: true,
+      shadow: const [BoxShadow(blurRadius: 8)],
+      child: const UnderlineInputBorder(),
+    );
+
+    test('lerpFrom', () {
+      final result = b.lerpFrom(a, 0.5)! as DecoratedInputBorder;
+
+      expect(result.isOutline, isTrue);
+    });
+
+    test('lerpTo', () {
+      final result = a.lerpTo(b, 0.5)! as DecoratedInputBorder;
+
+      expect(result.isOutline, isTrue);
+    });
+
+    test('ShapeBorder.lerp', () {
+      final result = ShapeBorder.lerp(a, b, 0.5)! as DecoratedInputBorder;
+
+      expect(result.isOutline, isTrue);
+    });
+  });
 }
