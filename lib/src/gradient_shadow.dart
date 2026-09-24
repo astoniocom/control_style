@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 /// A gradient shadow of a border of a box.
+@immutable
 class GradientShadow extends BoxShadow {
   /// Creates the box gradient shadow.
   ///
