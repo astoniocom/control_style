@@ -181,6 +181,29 @@ void main() {
       expect(result.first, isA<GradientShadow>());
     });
 
+    test('lerp() between a GradientShadow and a plain BoxShadow', () {
+      const plain = BoxShadow(color: Colors.green, blurRadius: 20);
+
+      final fromGradient = GradientShadow.lerp(shadow, plain, 0.5);
+      final toGradient = GradientShadow.lerp(plain, shadow, 0.5);
+
+      expect(fromGradient, isA<GradientShadow>());
+      expect(fromGradient!.blurRadius, 15);
+      expect(toGradient, isA<GradientShadow>());
+      expect(toGradient!.blurRadius, 15);
+      expect((toGradient as GradientShadow).gradient, isA<LinearGradient>());
+    });
+
+    test('lerp() between two plain BoxShadows stays a BoxShadow', () {
+      const a = BoxShadow(blurRadius: 10);
+      const b = BoxShadow(blurRadius: 20);
+
+      final result = GradientShadow.lerp(a, b, 0.5);
+
+      expect(result, isNot(isA<GradientShadow>()));
+      expect(result!.blurRadius, 15);
+    });
+
     test('DecoratedOutlinedBorder.scale()', () {
       final shape = DecoratedOutlinedBorder(
         shadow: const [shadow],

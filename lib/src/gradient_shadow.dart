@@ -23,6 +23,22 @@ class GradientShadow extends BoxShadow {
           blurStyle: blurStyle,
         );
 
+  /// Creates a gradient shadow that looks like the given plain [shadow], using
+  /// a solid gradient of the shadow's color.
+  ///
+  /// If [shadow] already is a [GradientShadow], it is returned as is.
+  factory GradientShadow.fromBoxShadow(BoxShadow shadow) {
+    if (shadow is GradientShadow) return shadow;
+    return GradientShadow(
+      gradient: LinearGradient(colors: [shadow.color, shadow.color]),
+      color: shadow.color,
+      offset: shadow.offset,
+      blurRadius: shadow.blurRadius,
+      spreadRadius: shadow.spreadRadius,
+      blurStyle: shadow.blurStyle,
+    );
+  }
+
   /// A gradient to use when drawing the shadow.
   final Gradient gradient;
 
@@ -80,9 +96,14 @@ class GradientShadow extends BoxShadow {
     );
   }
 
-  /// Linearly interpolate between two gradient shadows.
+  /// Linearly interpolate between two shadows.
   ///
-  /// The arguments must not be null.
+  /// If both shadows are plain [BoxShadow]s, this is [BoxShadow.lerp]. If at
+  /// least one of them is a [GradientShadow], the other one is treated as a
+  /// [GradientShadow] with a solid gradient of its color, so that the gradient
+  /// fades in or out instead of disappearing abruptly.
+  ///
+  /// If either shadow is null, the other one is scaled towards nothing.
   static BoxShadow? lerp(BoxShadow? a, BoxShadow? b, double t) {
     if (identical(a, b)) {
       return a;
@@ -90,18 +111,22 @@ class GradientShadow extends BoxShadow {
     if (a == null) return b!.scale(t);
     if (b == null) return a.scale(1.0 - t);
 
-    if (a is GradientShadow && b is GradientShadow) {
-      return GradientShadow(
-        color: Color.lerp(a.color, b.color, t)!,
-        gradient: Gradient.lerp(a.gradient, b.gradient, t)!,
-        offset: Offset.lerp(a.offset, b.offset, t)!,
-        blurRadius: ui.lerpDouble(a.blurRadius, b.blurRadius, t)!,
-        spreadRadius: ui.lerpDouble(a.spreadRadius, b.spreadRadius, t)!,
-        blurStyle: a.blurStyle == BlurStyle.normal ? b.blurStyle : a.blurStyle,
-      );
+    if (a is! GradientShadow && b is! GradientShadow) {
+      return BoxShadow.lerp(a, b, t);
     }
-    return BoxShadow.lerp(a, b, t);
+
+    final gradientA = GradientShadow.fromBoxShadow(a);
+    final gradientB = GradientShadow.fromBoxShadow(b);
+    return GradientShadow(
+      color: Color.lerp(a.color, b.color, t)!,
+      gradient: Gradient.lerp(gradientA.gradient, gradientB.gradient, t)!,
+      offset: Offset.lerp(a.offset, b.offset, t)!,
+      blurRadius: ui.lerpDouble(a.blurRadius, b.blurRadius, t)!,
+      spreadRadius: ui.lerpDouble(a.spreadRadius, b.spreadRadius, t)!,
+      blurStyle: a.blurStyle == BlurStyle.normal ? b.blurStyle : a.blurStyle,
+    );
   }
+
 
   /// Linearly interpolate between two lists of box shadows.
   ///
