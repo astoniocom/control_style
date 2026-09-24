@@ -203,6 +203,15 @@ void main() {
       expect(result!.blurRadius, 15);
     });
 
+    test('toString() is well-formed', () {
+      final text = shadow.toString();
+
+      expect(text, startsWith('GradientShadow('));
+      expect(text, endsWith(')'));
+      expect(text, contains('BlurStyle.normal'));
+      expect(text, contains('LinearGradient('));
+    });
+
     test('DecoratedOutlinedBorder.scale()', () {
       final shape = DecoratedOutlinedBorder(
         shadow: const [shadow],

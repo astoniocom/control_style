@@ -170,5 +170,5 @@ class GradientShadow extends BoxShadow {
   @override
   String toString() =>
       'GradientShadow($color, $offset, ${debugFormatDouble(blurRadius)}, '
-      '${debugFormatDouble(spreadRadius)}, $gradient), $blurStyle';
+      '${debugFormatDouble(spreadRadius)}, $blurStyle, $gradient)';
 }
