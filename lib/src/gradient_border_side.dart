@@ -100,10 +100,13 @@ class GradientBorderSide {
   }
 
   /// Creates a [Paint] object that will draw the line in this border's style.
-  Paint toPaint(Rect rect) {
+  ///
+  /// The [rect] is the area the [gradient] is laid out in. The [textDirection]
+  /// is required for gradients that use [AlignmentDirectional].
+  Paint toPaint(Rect rect, {TextDirection? textDirection}) {
     final similarBorderSide = BorderSide(width: width, style: style);
     final paint = similarBorderSide.toPaint()
-      ..shader = gradient.createShader(rect);
+      ..shader = gradient.createShader(rect, textDirection: textDirection);
     return paint;
   }
 

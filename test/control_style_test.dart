@@ -193,4 +193,60 @@ void main() {
       expect(scaled.innerShadow.single, isA<GradientShadow>());
     });
   });
+
+  group('text direction is forwarded to gradient shaders', () {
+    const directional = LinearGradient(
+      begin: AlignmentDirectional.centerStart,
+      end: AlignmentDirectional.centerEnd,
+      colors: [Colors.red, Colors.blue],
+    );
+
+    void paint(ShapeBorder shape) {
+      final recorder = ui.PictureRecorder();
+      shape.paint(
+        Canvas(recorder),
+        _shapeRect,
+        textDirection: TextDirection.rtl,
+      );
+    }
+
+    test('backgroundGradient', () {
+      final shape = DecoratedOutlinedBorder(
+        backgroundGradient: directional,
+        child: const RoundedRectangleBorder(),
+      );
+
+      expect(() => paint(shape), returnsNormally);
+    });
+
+    test('borderGradient', () {
+      final shape = DecoratedOutlinedBorder(
+        borderGradient: const GradientBorderSide(gradient: directional),
+        child: const RoundedRectangleBorder(),
+      );
+
+      expect(() => paint(shape), returnsNormally);
+    });
+
+    test('GradientShadow in shadow and innerShadow', () {
+      final shape = DecoratedOutlinedBorder(
+        shadow: const [GradientShadow(gradient: directional, blurRadius: 4)],
+        innerShadow: const [
+          GradientShadow(gradient: directional, blurRadius: 4),
+        ],
+        child: const RoundedRectangleBorder(),
+      );
+
+      expect(() => paint(shape), returnsNormally);
+    });
+
+    test('GradientBorderSide.toPaint', () {
+      const side = GradientBorderSide(gradient: directional);
+
+      expect(
+        () => side.toPaint(_shapeRect, textDirection: TextDirection.rtl),
+        returnsNormally,
+      );
+    });
+  });
 }

@@ -60,7 +60,10 @@ mixin DecorationPainter on ShapeBorder {
     // Draw background
     if (backgroundGradient != null) {
       final backgroundPaint = Paint()
-        ..shader = backgroundGradient!.createShader(rect);
+        ..shader = backgroundGradient!.createShader(
+          rect,
+          textDirection: textDirection,
+        );
       canvas.drawPath(innerPath, backgroundPaint);
     }
 
@@ -143,7 +146,7 @@ mixin DecorationPainter on ShapeBorder {
     final outerPath = getOuterPath(rect, textDirection: textDirection);
 
     final borderPath = outerPath..addPath(innerPath, Offset.zero);
-    final paint = side.toPaint(rect);
+    final paint = side.toPaint(rect, textDirection: textDirection);
     canvas.drawPath(borderPath, paint);
   }
 }
