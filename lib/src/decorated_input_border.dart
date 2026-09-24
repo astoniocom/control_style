@@ -207,7 +207,12 @@ class DecoratedInputBorder extends InputBorder with DecorationPainter {
       gapPercentage: gapPercentage,
     );
 
-    paintBorder2(canvas, rect, borderGradient, textDirection: textDirection);
+    paintGradientBorder(
+      canvas,
+      rect,
+      borderGradient,
+      textDirection: textDirection,
+    );
   }
 
   @override

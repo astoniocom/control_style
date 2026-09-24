@@ -190,7 +190,12 @@ class DecoratedOutlinedBorder extends OutlinedBorder with DecorationPainter {
 
     child.paint(canvas, rect, textDirection: textDirection);
 
-    paintBorder2(canvas, rect, borderGradient, textDirection: textDirection);
+    paintGradientBorder(
+      canvas,
+      rect,
+      borderGradient,
+      textDirection: textDirection,
+    );
   }
 
   @override

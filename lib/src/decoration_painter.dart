@@ -149,7 +149,7 @@ mixin DecorationPainter on ShapeBorder {
   /// This is meant to be called after painting the [child], so the gradient
   /// covers the child's (transparent) side. Does nothing if [side] is
   /// switched off, see [GradientBorderSide.isNone].
-  void paintBorder2(
+  void paintGradientBorder(
     Canvas canvas,
     Rect rect,
     GradientBorderSide side, {
@@ -164,4 +164,17 @@ mixin DecorationPainter on ShapeBorder {
     final paint = side.toPaint(rect, textDirection: textDirection);
     canvas.drawPath(borderPath, paint);
   }
+
+  /// Deprecated alias of [paintGradientBorder].
+  @Deprecated(
+    'Use paintGradientBorder instead. '
+    'This feature was deprecated after v0.1.2.',
+  )
+  void paintBorder2(
+    Canvas canvas,
+    Rect rect,
+    GradientBorderSide side, {
+    TextDirection? textDirection,
+  }) =>
+      paintGradientBorder(canvas, rect, side, textDirection: textDirection);
 }
