@@ -130,17 +130,8 @@ class DecoratedOutlinedBorder extends OutlinedBorder with DecorationPainter {
     Gradient? backgroundGradient,
     GradientBorderSide? borderGradient,
   }) {
-    var resolvedChild = child ?? this.child;
-    if (side != null) {
-      resolvedChild = (side != BorderSide.none)
-          ? resolvedChild.copyWith(
-              side: BorderSide(width: side.width, color: Colors.transparent),
-            )
-          : resolvedChild;
-    }
-
     return DecoratedOutlinedBorder(
-      child: resolvedChild,
+      child: (child ?? this.child).copyWith(side: side),
       shadow: shadow ?? this.shadow,
       innerShadow: innerShadow ?? this.innerShadow,
       backgroundGradient: backgroundGradient ?? this.backgroundGradient,

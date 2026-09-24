@@ -7,6 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 const Color _red = Color(0xFFFF0000);
 const Color _white = Color(0xFFFFFFFF);
+const LinearGradient _redGradient = LinearGradient(colors: [_red, _red]);
 
 /// The rectangle the shape is painted into, surrounded by a 20px margin.
 const Rect _shapeRect = Rect.fromLTWH(20, 20, 100, 100);
@@ -93,6 +94,49 @@ void main() {
         final image = await boundary.toImage();
         expect(_isRed(await _pixel(image, 50, 50)), isTrue);
       });
+    });
+  });
+
+  group('DecoratedOutlinedBorder.copyWith(side:)', () {
+    test('keeps the side color when there is no gradient border', () {
+      final shape = DecoratedOutlinedBorder(
+        child: const RoundedRectangleBorder(),
+      );
+      const side = BorderSide(color: _red, width: 4);
+
+      final copy = shape.copyWith(side: side) as DecoratedOutlinedBorder;
+
+      expect(copy.child.side, side);
+    });
+
+    test('applies BorderSide.none to the child', () {
+      final shape = DecoratedOutlinedBorder(
+        child: const RoundedRectangleBorder(
+          side: BorderSide(color: _red, width: 4),
+        ),
+      );
+
+      final copy =
+          shape.copyWith(side: BorderSide.none) as DecoratedOutlinedBorder;
+
+      expect(copy.child.side, BorderSide.none);
+    });
+
+    test('still hides the child side when a gradient border is set', () {
+      final shape = DecoratedOutlinedBorder(
+        borderGradient: const GradientBorderSide(
+          gradient: _redGradient,
+          width: 3,
+        ),
+        child: const RoundedRectangleBorder(),
+      );
+
+      final copy = shape.copyWith(
+        side: const BorderSide(color: Colors.blue, width: 4),
+      ) as DecoratedOutlinedBorder;
+
+      expect(copy.child.side.color, Colors.transparent);
+      expect(copy.child.side.width, 3);
     });
   });
 }
