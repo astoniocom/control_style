@@ -16,17 +16,24 @@ const Rect _canvasRect = Rect.fromLTWH(0, 0, 140, 140);
 
 /// Paints [shape] into [_shapeRect] on a white canvas and rasterizes it.
 ///
-/// [afterPaint] is invoked with the same canvas after the shape has been
-/// painted, which allows checking for canvas state leaking out of `paint`.
+/// [paint] replaces the default `shape.paint(canvas, _shapeRect)` call, e.g.
+/// to pass extra arguments. [afterPaint] is invoked with the same canvas after
+/// the shape has been painted, which allows checking for canvas state leaking
+/// out of `paint`.
 Future<ui.Image> _rasterize(
   ShapeBorder shape, {
   TextDirection textDirection = TextDirection.ltr,
+  void Function(Canvas canvas)? paint,
   void Function(Canvas canvas)? afterPaint,
 }) {
   final recorder = ui.PictureRecorder();
   final canvas = Canvas(recorder)
     ..drawRect(_canvasRect, Paint()..color = _white);
-  shape.paint(canvas, _shapeRect, textDirection: textDirection);
+  if (paint != null) {
+    paint(canvas);
+  } else {
+    shape.paint(canvas, _shapeRect, textDirection: textDirection);
+  }
   afterPaint?.call(canvas);
   return recorder.endRecording().toImage(_canvasSize, _canvasSize);
 }
@@ -189,6 +196,150 @@ void main() {
         expect(_isWhite(await _pixel(image, 20, y)), isTrue);
         expect(_isWhite(await _pixel(image, 21, y)), isTrue);
       });
+    });
+
+    testWidgets('outside part is concentric at rounded corners', (
+      tester,
+    ) async {
+      await tester.runAsync(() async {
+        // Corner radius 30, band 10 px inside and 10 px outside the edge, so
+        // the corner arcs are centered at (50, 50) with radii 20 and 40.
+        final shape = DecoratedOutlinedBorder(
+          borderGradient: const GradientBorderSide(
+            gradient: _redGradient,
+            width: 20,
+            strokeAlign: GradientBorderSide.strokeAlignCenter,
+          ),
+          child: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30),
+          ),
+        );
+        final image = await _rasterize(shape);
+        // Straight side: rect.left - 10 .. rect.left + 10.
+        expect(_isWhite(await _pixel(image, 9, 70)), isTrue);
+        expect(_isRed(await _pixel(image, 10, 70)), isTrue);
+        expect(_isRed(await _pixel(image, 29, 70)), isTrue);
+        expect(_isWhite(await _pixel(image, 30, 70)), isTrue);
+        // On the diagonal, (20, 20) is 41.7 px from (50, 50): outside the
+        // outer arc. A non-concentric outer edge would reach 44 px here.
+        expect(_isWhite(await _pixel(image, 20, 20)), isTrue, reason: 'corner');
+        // (24, 24) is 36 px from (50, 50): inside the band.
+        expect(_isRed(await _pixel(image, 24, 24)), isTrue);
+      });
+    });
+
+    testWidgets('OutlineInputBorder keeps the floating label gap', (
+      tester,
+    ) async {
+      await tester.runAsync(() async {
+        final shape = DecoratedInputBorder(
+          borderGradient: const GradientBorderSide(
+            gradient: _redGradient,
+            width: 4,
+          ),
+          child: const OutlineInputBorder(),
+        );
+        final image = await _rasterize(
+          shape,
+          // The gap start is in canvas coordinates: 56 .. 94 with the default
+          // gapPadding of 4.
+          paint: (canvas) => shape.paint(
+            canvas,
+            _shapeRect,
+            textDirection: TextDirection.ltr,
+            gapStart: 60,
+            gapExtent: 30,
+            gapPercentage: 1,
+          ),
+        );
+        expect(_isRed(await _pixel(image, 40, 21)), isTrue, reason: 'before');
+        expect(_isWhite(await _pixel(image, 75, 21)), isTrue, reason: 'gap');
+        expect(_isRed(await _pixel(image, 110, 21)), isTrue, reason: 'after');
+        expect(_isRed(await _pixel(image, 70, 118)), isTrue, reason: 'bottom');
+      });
+    });
+
+    testWidgets('UnderlineInputBorder ignores strokeAlign like Flutter does', (
+      tester,
+    ) async {
+      await tester.runAsync(() async {
+        final shape = DecoratedInputBorder(
+          borderGradient: const GradientBorderSide(
+            gradient: _redGradient,
+            width: 2,
+            strokeAlign: GradientBorderSide.strokeAlignOutside,
+          ),
+          child: const UnderlineInputBorder(),
+        );
+        final image = await _rasterize(shape);
+        expect(_isWhite(await _pixel(image, 70, 18)), isTrue, reason: 'top');
+        expect(_isWhite(await _pixel(image, 18, 70)), isTrue, reason: 'left');
+        expect(_isRed(await _pixel(image, 70, 119)), isTrue, reason: 'bottom');
+        expect(_isWhite(await _pixel(image, 70, 121)), isTrue, reason: 'below');
+      });
+    });
+
+    test('a layer is used only when the fill would be inaccurate', () {
+      bool usesLayer(ShapeBorder shape, GradientBorderSide side) {
+        final canvas = TestRecordingCanvas();
+        (shape as DecorationPainter).paintGradientBorder(
+          canvas,
+          _shapeRect,
+          side,
+          textDirection: TextDirection.ltr,
+        );
+        return canvas.invocations
+            .any((i) => i.invocation.memberName == #saveLayer);
+      }
+
+      const inside = GradientBorderSide(gradient: _redGradient, width: 4);
+      const center = GradientBorderSide(
+        gradient: _redGradient,
+        width: 4,
+        strokeAlign: GradientBorderSide.strokeAlignCenter,
+      );
+      const child = RoundedRectangleBorder();
+      expect(
+        usesLayer(
+          DecoratedOutlinedBorder(borderGradient: inside, child: child),
+          inside,
+        ),
+        isFalse,
+      );
+      expect(
+        usesLayer(
+          DecoratedOutlinedBorder(borderGradient: center, child: child),
+          center,
+        ),
+        isTrue,
+      );
+
+      final input = DecoratedInputBorder(
+        borderGradient: inside,
+        child: const OutlineInputBorder(),
+      );
+      final canvas = TestRecordingCanvas();
+      input.paint(canvas, _shapeRect, textDirection: TextDirection.ltr);
+      expect(
+        canvas.invocations.any((i) => i.invocation.memberName == #saveLayer),
+        isFalse,
+        reason: 'no gap',
+      );
+      final gapCanvas = TestRecordingCanvas();
+      input.paint(
+        gapCanvas,
+        _shapeRect,
+        textDirection: TextDirection.ltr,
+        gapStart: 60,
+        gapExtent: 30,
+        gapPercentage: 1,
+      );
+      expect(
+        gapCanvas.invocations
+            .any((i) => i.invocation.memberName == #saveLayer),
+        isTrue,
+        reason: 'gap',
+      );
     });
 
     test('strokeAlign is forwarded to the child side and dimensions', () {

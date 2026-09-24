@@ -87,18 +87,13 @@ class GradientBorderSide {
   ///
   /// The decorated shape's own side takes this alignment together with the
   /// [width], so [ShapeBorder.dimensions] and [ShapeBorder.getInnerPath]
-  /// follow it the same way they do for a plain [BorderSide]. The band is
-  /// painted between [ShapeBorder.getInnerPath] of the shape's rect and
-  /// [ShapeBorder.getOuterPath] of that rect inflated by [strokeOutset].
+  /// follow it the same way they do for a plain [BorderSide], and the band
+  /// covers exactly the area a [BorderSide] of the same width and alignment
+  /// would. Shapes that ignore [BorderSide.strokeAlign], such as
+  /// [UnderlineInputBorder], ignore this value as well.
   ///
-  /// Two limitations compared to a stroked [BorderSide]:
-  ///
-  /// * Shapes that ignore [BorderSide.strokeAlign], such as
-  ///   [UnderlineInputBorder], also do not restrict where the outside part of
-  ///   the band is painted. Keep the default for them.
-  /// * For rounded shapes the outside part is not concentric with the edge
-  ///   (the corner radius does not grow with [strokeOutset]), so the band is
-  ///   slightly wider at the corners.
+  /// Any value other than [strokeAlignInside] makes painting more expensive,
+  /// see `DecorationPainter.paintGradientBorder`.
   final double strokeAlign;
 
   /// The border is drawn fully inside of the border path.

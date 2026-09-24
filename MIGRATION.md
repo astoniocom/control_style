@@ -52,8 +52,19 @@ the behaviour described above. It follows `BorderSide.strokeAlign`
 (`strokeAlignInside`, `strokeAlignCenter`, `strokeAlignOutside`, or any value
 in between) and is forwarded to the wrapped child's side, so `dimensions`
 and `getInnerPath` change accordingly. Shapes that ignore
-`BorderSide.strokeAlign`, such as `UnderlineInputBorder`, should keep the
-default.
+`BorderSide.strokeAlign`, such as `UnderlineInputBorder`, ignore it as well.
+
+Any value other than the default is painted through a `Canvas.saveLayer`
+mask and is therefore more expensive than the default.
+
+### Floating label gap
+
+The gradient border of an `OutlineInputBorder` used to cover the gap of a
+floating label. It now leaves the gap open like the plain border. If you
+worked around this with `floatingLabelBehavior: FloatingLabelBehavior.never`,
+the workaround can be removed. Custom `DecorationPainter` implementations
+should pass `gapStart`, `gapExtent` and `gapPercentage` from
+`InputBorder.paint` to `paintGradientBorder` to get the gap.
 
 `GradientBorderSide.toPaint` now returns a `PaintingStyle.fill` paint; the
 width is not represented in the paint. A `width` of 0 paints nothing instead

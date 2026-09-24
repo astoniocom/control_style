@@ -146,14 +146,27 @@ mixin DecorationPainter on ShapeBorder {
         max(boxShadow.offset.dx.abs(), boxShadow.offset.dy.abs());
   }
 
-  /// Paints the gradient [side] along the edge of the shape, filling the area
-  /// between [getInnerPath] of [rect] and [getOuterPath] of [rect] inflated
-  /// by [GradientBorderSide.strokeOutset].
+  /// Paints the gradient [side] along the edge of the shape, exactly
+  /// [GradientBorderSide.width] wide and positioned according to
+  /// [GradientBorderSide.strokeAlign]. The child's side has the same width and
+  /// alignment, see [borderGradient].
   ///
-  /// The area is exactly [GradientBorderSide.width] wide because the child's
-  /// side is given that width and [GradientBorderSide.strokeAlign], see
-  /// [borderGradient]. With the default alignment nothing is painted outside
-  /// [getOuterPath].
+  /// In the common case the side is painted as the area between
+  /// [getInnerPath] of [rect] and [getOuterPath], which is cheap. When that
+  /// area would not match the side the [child] paints, the child's side is
+  /// painted opaquely into a layer and used as a mask for the gradient
+  /// instead. This is pixel-exact for any shape but costs a [Canvas.saveLayer]
+  /// per paint, so it is used only when needed:
+  ///
+  /// * [GradientBorderSide.strokeAlign] is not [BorderSide.strokeAlignInside].
+  ///   Flutter grows the corner radius of a stroke by its outset while
+  ///   [getOuterPath] of an inflated rect does not, so the two edges of the
+  ///   fill would not be concentric.
+  /// * An [InputBorder] child has a gap for a floating label ([gapStart],
+  ///   [gapExtent] and [gapPercentage] as in [InputBorder.paint]).
+  ///
+  /// The mask requires the [child] to be an [OutlinedBorder] or an
+  /// [InputBorder]; for other children the fill is used unconditionally.
   ///
   /// This is meant to be called after painting the [child], so the gradient
   /// covers the child's (transparent) side. Does nothing if [side] is
@@ -163,8 +176,31 @@ mixin DecorationPainter on ShapeBorder {
     Rect rect,
     GradientBorderSide side, {
     TextDirection? textDirection,
+    double? gapStart,
+    double gapExtent = 0.0,
+    double gapPercentage = 0.0,
   }) {
     if (side.isNone) return;
+
+    // Same condition `OutlineInputBorder.paint` uses to decide whether to
+    // draw the gap.
+    final hasGap = gapStart != null && gapExtent > 0.0 && gapPercentage > 0.0;
+    if (side.strokeOutset > 0 || hasGap) {
+      final mask = _sideMask(side);
+      if (mask != null) {
+        _paintMaskedGradientBorder(
+          canvas,
+          rect,
+          side,
+          mask,
+          textDirection: textDirection,
+          gapStart: gapStart,
+          gapExtent: gapExtent,
+          gapPercentage: gapPercentage,
+        );
+        return;
+      }
+    }
 
     final innerPath = getInnerPath(rect, textDirection: textDirection);
     final outerPath = getOuterPath(
@@ -180,5 +216,54 @@ mixin DecorationPainter on ShapeBorder {
         Path.combine(PathOperation.difference, outerPath, innerPath);
     final paint = side.toPaint(rect, textDirection: textDirection);
     canvas.drawPath(borderPath, paint);
+  }
+
+  /// The [child] with an opaque side of the width and alignment of [side], or
+  /// null if the child's side cannot be replaced.
+  ShapeBorder? _sideMask(GradientBorderSide side) {
+    final maskSide = BorderSide(
+      width: side.width,
+      strokeAlign: side.strokeAlign,
+    );
+    final child = this.child;
+    if (child is OutlinedBorder) return child.copyWith(side: maskSide);
+    if (child is InputBorder) return child.copyWith(borderSide: maskSide);
+    return null;
+  }
+
+  /// Paints [mask] into a layer and fills it with the gradient of [side]
+  /// using [BlendMode.srcIn].
+  void _paintMaskedGradientBorder(
+    Canvas canvas,
+    Rect rect,
+    GradientBorderSide side,
+    ShapeBorder mask, {
+    required TextDirection? textDirection,
+    required double? gapStart,
+    required double gapExtent,
+    required double gapPercentage,
+  }) {
+    // One extra pixel for anti-aliasing of the outer edge.
+    final bounds = rect.inflate(side.strokeOutset + 1);
+    canvas.saveLayer(bounds, Paint());
+    if (mask is InputBorder) {
+      mask.paint(
+        canvas,
+        rect,
+        textDirection: textDirection,
+        gapStart: gapStart,
+        gapExtent: gapExtent,
+        gapPercentage: gapPercentage,
+      );
+    } else {
+      mask.paint(canvas, rect, textDirection: textDirection);
+    }
+    canvas
+      ..drawRect(
+        bounds,
+        side.toPaint(rect, textDirection: textDirection)
+          ..blendMode = BlendMode.srcIn,
+      )
+      ..restore();
   }
 }

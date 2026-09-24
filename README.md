@@ -320,7 +320,9 @@ Add the `borderGradient` parameter of the `GradientBorderSide` type to `Decorate
 
 When `borderGradient` is set, it replaces the border of the wrapped `child`: the child’s own side becomes transparent and takes the `width` and `strokeAlign` of the gradient side, so the child’s `color`, `width` and `strokeAlign` are ignored. To draw a single-colour border through the same mechanism, use a gradient of two identical colours.
 
-The gradient side is painted as a band exactly `width` logical pixels wide. `strokeAlign` works like `BorderSide.strokeAlign`: `GradientBorderSide.strokeAlignInside` (the default) keeps the band inside the shape, `strokeAlignCenter` centres it on the edge, `strokeAlignOutside` puts it outside. Keep the default for shapes that ignore `BorderSide.strokeAlign`, such as `UnderlineInputBorder`.
+The gradient side is painted as a band exactly `width` logical pixels wide. `strokeAlign` works like `BorderSide.strokeAlign`: `GradientBorderSide.strokeAlignInside` (the default) keeps the band inside the shape, `strokeAlignCenter` centres it on the edge, `strokeAlignOutside` puts it outside. Shapes that ignore `BorderSide.strokeAlign`, such as `UnderlineInputBorder`, ignore it as well.
+
+With the default alignment the band is a plain path fill. Any other alignment, and the floating label gap of an `OutlineInputBorder`, are painted through a mask of the child’s side in a separate layer (`Canvas.saveLayer`), which is pixel-exact but more expensive. Keep this in mind for long lists of controls with a gradient border.
 
 ``` dart
 TextButton(

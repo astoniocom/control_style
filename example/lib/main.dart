@@ -65,14 +65,24 @@ class Preset {
     return Preset(
       name: name,
       borderRadius: borderRadius ?? this.borderRadius,
-      shadowGradient: shadowGradient != defaultGradient ? shadowGradient : this.shadowGradient,
+      shadowGradient: shadowGradient != defaultGradient
+          ? shadowGradient
+          : this.shadowGradient,
       shadowBlurRadius: shadowBlurRadius ?? this.shadowBlurRadius,
       shadowSpreadRadius: shadowSpreadRadius ?? this.shadowSpreadRadius,
-      innerShadowGradient: innerShadowGradient != defaultGradient ? innerShadowGradient : this.innerShadowGradient,
-      innerShadowBlurRadius: innerShadowBlurRadius ?? this.innerShadowBlurRadius,
-      innerShadowSpreadRadius: innerShadowSpreadRadius ?? this.innerShadowSpreadRadius,
-      borderGradient: borderGradient != defaultGradient ? borderGradient : this.borderGradient,
-      backgroundGradient: backgroundGradient != defaultGradient ? backgroundGradient : this.backgroundGradient,
+      innerShadowGradient: innerShadowGradient != defaultGradient
+          ? innerShadowGradient
+          : this.innerShadowGradient,
+      innerShadowBlurRadius:
+          innerShadowBlurRadius ?? this.innerShadowBlurRadius,
+      innerShadowSpreadRadius:
+          innerShadowSpreadRadius ?? this.innerShadowSpreadRadius,
+      borderGradient: borderGradient != defaultGradient
+          ? borderGradient
+          : this.borderGradient,
+      backgroundGradient: backgroundGradient != defaultGradient
+          ? backgroundGradient
+          : this.backgroundGradient,
       borderWidth: borderWidth ?? this.borderWidth,
     );
   }
@@ -82,7 +92,8 @@ final List<Preset> presets = [
   Preset(name: "Shadow", shadowGradient: _gradientCollection[0]),
   Preset(name: "Inner shadow", innerShadowGradient: _gradientCollection[0]),
   Preset(name: "Gradient border", borderGradient: _gradientCollection[1]),
-  Preset(name: "Background gradient", backgroundGradient: _gradientCollection[3]),
+  Preset(
+      name: "Background gradient", backgroundGradient: _gradientCollection[3]),
   Preset(
       name: "All in one",
       shadowGradient: _gradientCollection[1],
@@ -105,9 +116,12 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     final outlinedBorders = {
-      BorderType.rounded: RoundedRectangleBorder(borderRadius: BorderRadius.circular(preset.borderRadius)),
-      BorderType.beveled: BeveledRectangleBorder(borderRadius: BorderRadius.circular(preset.borderRadius)),
-      BorderType.continuous: ContinuousRectangleBorder(borderRadius: BorderRadius.circular(preset.borderRadius)),
+      BorderType.rounded: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(preset.borderRadius)),
+      BorderType.beveled: BeveledRectangleBorder(
+          borderRadius: BorderRadius.circular(preset.borderRadius)),
+      BorderType.continuous: ContinuousRectangleBorder(
+          borderRadius: BorderRadius.circular(preset.borderRadius)),
       BorderType.stadium: const StadiumBorder(),
     };
     final outlinedBorder = outlinedBorders[borderType]!;
@@ -115,28 +129,46 @@ class _MyAppState extends State<MyApp> {
     final outlinedShape = DecoratedOutlinedBorder(
       shadow: [
         if (preset.shadowGradient != null)
-          GradientShadow(gradient: preset.shadowGradient!, blurRadius: preset.shadowBlurRadius, spreadRadius: preset.shadowSpreadRadius)
+          GradientShadow(
+              gradient: preset.shadowGradient!,
+              blurRadius: preset.shadowBlurRadius,
+              spreadRadius: preset.shadowSpreadRadius)
       ],
       innerShadow: [
         if (preset.innerShadowGradient != null)
-          GradientShadow(gradient: preset.innerShadowGradient!, blurRadius: preset.innerShadowBlurRadius, spreadRadius: preset.innerShadowSpreadRadius)
+          GradientShadow(
+              gradient: preset.innerShadowGradient!,
+              blurRadius: preset.innerShadowBlurRadius,
+              spreadRadius: preset.innerShadowSpreadRadius)
       ],
       backgroundGradient: preset.backgroundGradient,
-      borderGradient: preset.borderGradient != null ? GradientBorderSide(gradient: preset.borderGradient!, width: preset.borderWidth) : GradientBorderSide.none,
+      borderGradient: preset.borderGradient != null
+          ? GradientBorderSide(
+              gradient: preset.borderGradient!, width: preset.borderWidth)
+          : GradientBorderSide.none,
       child: outlinedBorder,
     );
 
     final inputShape = DecoratedInputBorder(
       shadow: [
         if (preset.shadowGradient != null)
-          GradientShadow(gradient: preset.shadowGradient!, blurRadius: preset.shadowBlurRadius, spreadRadius: preset.shadowSpreadRadius)
+          GradientShadow(
+              gradient: preset.shadowGradient!,
+              blurRadius: preset.shadowBlurRadius,
+              spreadRadius: preset.shadowSpreadRadius)
       ],
       innerShadow: [
         if (preset.innerShadowGradient != null)
-          GradientShadow(gradient: preset.innerShadowGradient!, blurRadius: preset.innerShadowBlurRadius, spreadRadius: preset.innerShadowSpreadRadius)
+          GradientShadow(
+              gradient: preset.innerShadowGradient!,
+              blurRadius: preset.innerShadowBlurRadius,
+              spreadRadius: preset.innerShadowSpreadRadius)
       ],
       backgroundGradient: preset.backgroundGradient,
-      borderGradient: preset.borderGradient != null ? GradientBorderSide(gradient: preset.borderGradient!, width: preset.borderWidth) : GradientBorderSide.none,
+      borderGradient: preset.borderGradient != null
+          ? GradientBorderSide(
+              gradient: preset.borderGradient!, width: preset.borderWidth)
+          : GradientBorderSide.none,
       clipInner: true,
       child: OutlineInputBorder(
         borderRadius: BorderRadius.circular(preset.borderRadius),
@@ -145,9 +177,10 @@ class _MyAppState extends State<MyApp> {
 
     return MaterialApp(
       theme: ThemeData(
-        textButtonTheme: TextButtonThemeData(style: TextButton.styleFrom(shape: outlinedShape)),
+        textButtonTheme: TextButtonThemeData(
+            style: TextButton.styleFrom(shape: outlinedShape)),
         inputDecorationTheme: InputDecorationTheme(
-          floatingLabelBehavior: FloatingLabelBehavior.never,
+          floatingLabelBehavior: FloatingLabelBehavior.auto,
           border: inputShape,
         ),
       ),
@@ -163,8 +196,11 @@ class _MyAppState extends State<MyApp> {
                   const SizedBox(height: 16),
                   TextButton(
                       onPressed: () => setState(() {
-                            final curBorderIndex = outlinedBorders.keys.toList().indexOf(borderType);
-                            borderType = outlinedBorders.keys.toList()[(curBorderIndex + 1) % outlinedBorders.length];
+                            final curBorderIndex = outlinedBorders.keys
+                                .toList()
+                                .indexOf(borderType);
+                            borderType = outlinedBorders.keys.toList()[
+                                (curBorderIndex + 1) % outlinedBorders.length];
                           }),
                       child: Text("${borderType.name} border example")),
                   const SizedBox(height: 42),
@@ -186,66 +222,86 @@ class _MyAppState extends State<MyApp> {
                       const Text("Preset"),
                       DropdownButton<Preset>(
                         value: presets.contains(preset) ? preset : null,
-                        items: presets.map((e) => DropdownMenuItem(value: e, child: Text(e.name))).toList(),
+                        items: presets
+                            .map((e) =>
+                                DropdownMenuItem(value: e, child: Text(e.name)))
+                            .toList(),
                         onChanged: (value) => setState(() => preset = value!),
                       ),
                       const Divider(),
                       const Text("Shadow color"),
                       GradientPicker(
-                          onChanged: (Gradient? value) => setState(() => preset = preset.copyWith(shadowGradient: value)), value: preset.shadowGradient),
+                          onChanged: (Gradient? value) => setState(() =>
+                              preset = preset.copyWith(shadowGradient: value)),
+                          value: preset.shadowGradient),
                       if (preset.shadowGradient != null) ...[
                         const SizedBox(height: 16),
-                        Text("Shadow blur radius ${preset.shadowBlurRadius.round()}"),
+                        Text(
+                            "Shadow blur radius ${preset.shadowBlurRadius.round()}"),
                         Slider(
                           max: 50,
                           value: preset.shadowBlurRadius,
-                          onChanged: (value) => setState(() => preset = preset.copyWith(shadowBlurRadius: value)),
+                          onChanged: (value) => setState(() => preset =
+                              preset.copyWith(shadowBlurRadius: value)),
                         ),
                         const SizedBox(height: 16),
-                        Text("Shadow spread radius ${preset.shadowSpreadRadius.round()}"),
+                        Text(
+                            "Shadow spread radius ${preset.shadowSpreadRadius.round()}"),
                         Slider(
                           max: 30,
                           value: preset.shadowSpreadRadius,
-                          onChanged: (value) => setState(() => preset = preset.copyWith(shadowSpreadRadius: value)),
+                          onChanged: (value) => setState(() => preset =
+                              preset.copyWith(shadowSpreadRadius: value)),
                         ),
                       ],
                       const SizedBox(height: 16),
                       const Text("Inner shadow color"),
                       GradientPicker(
-                          onChanged: (Gradient? value) => setState(() => preset = preset.copyWith(innerShadowGradient: value)),
+                          onChanged: (Gradient? value) => setState(() =>
+                              preset =
+                                  preset.copyWith(innerShadowGradient: value)),
                           value: preset.innerShadowGradient),
                       if (preset.innerShadowGradient != null) ...[
-                        Text("Inner shadow blur radius ${preset.innerShadowBlurRadius.round()}"),
+                        Text(
+                            "Inner shadow blur radius ${preset.innerShadowBlurRadius.round()}"),
                         Slider(
                           max: 30,
                           value: preset.innerShadowBlurRadius,
-                          onChanged: (value) => setState(() => preset = preset.copyWith(innerShadowBlurRadius: value)),
+                          onChanged: (value) => setState(() => preset =
+                              preset.copyWith(innerShadowBlurRadius: value)),
                         ),
                         const SizedBox(height: 16),
-                        Text("Inner shadow spread radius ${preset.innerShadowSpreadRadius.round()}"),
+                        Text(
+                            "Inner shadow spread radius ${preset.innerShadowSpreadRadius.round()}"),
                         Slider(
                           max: 10,
                           value: preset.innerShadowSpreadRadius,
-                          onChanged: (value) => setState(() => preset = preset.copyWith(innerShadowSpreadRadius: value)),
+                          onChanged: (value) => setState(() => preset =
+                              preset.copyWith(innerShadowSpreadRadius: value)),
                         ),
                       ],
                       const SizedBox(height: 16),
                       const Text("Border color"),
                       GradientPicker(
-                          onChanged: (Gradient? value) => setState(() => preset = preset.copyWith(borderGradient: value)), value: preset.borderGradient),
+                          onChanged: (Gradient? value) => setState(() =>
+                              preset = preset.copyWith(borderGradient: value)),
+                          value: preset.borderGradient),
                       if (borderType != BorderType.stadium) ...[
                         const SizedBox(height: 16),
                         Text("Border radius ${preset.borderRadius.round()}"),
                         Slider(
                           max: 50,
                           value: preset.borderRadius,
-                          onChanged: (value) => setState(() => preset = preset.copyWith(borderRadius: value)),
+                          onChanged: (value) => setState(() =>
+                              preset = preset.copyWith(borderRadius: value)),
                         ),
                       ],
                       const SizedBox(height: 16),
                       const Text("Inner gradient"),
                       GradientPicker(
-                          onChanged: (Gradient? value) => setState(() => preset = preset.copyWith(backgroundGradient: value)),
+                          onChanged: (Gradient? value) => setState(() =>
+                              preset =
+                                  preset.copyWith(backgroundGradient: value)),
                           value: preset.backgroundGradient),
                     ],
                   ),
@@ -278,8 +334,10 @@ class GradientPicker extends StatelessWidget {
     return DropdownButton(
       value: value,
       items: [
-        const DropdownMenuItem<Gradient>(value: null, child: Text("Not selected")),
-        ..._gradientCollection.map((e) => DropdownMenuItem(value: e, child: getDisplayWidget(e)))
+        const DropdownMenuItem<Gradient>(
+            value: null, child: Text("Not selected")),
+        ..._gradientCollection
+            .map((e) => DropdownMenuItem(value: e, child: getDisplayWidget(e)))
       ],
       onChanged: onChanged,
     );

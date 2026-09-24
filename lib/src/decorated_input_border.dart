@@ -214,6 +214,9 @@ class DecoratedInputBorder extends InputBorder with DecorationPainter {
       rect,
       borderGradient,
       textDirection: textDirection,
+      gapStart: gapStart,
+      gapExtent: gapExtent,
+      gapPercentage: gapPercentage,
     );
   }
 

@@ -28,7 +28,22 @@ New features:
   `strokeAlignOutside`), plus `strokeInset` and `strokeOutset`. The alignment
   is forwarded to the decorated shape's side, so `dimensions` and
   `getInnerPath` follow it. Shapes that ignore `BorderSide.strokeAlign`
-  (`UnderlineInputBorder`) should keep the default.
+  (`UnderlineInputBorder`) ignore it as well.
+
+Bug fixes:
+
+- The gradient border of an `OutlineInputBorder` leaves the gap for a
+  floating label, as the plain border does. `paintGradientBorder` accepts
+  `gapStart`, `gapExtent` and `gapPercentage` for that; `DecoratedInputBorder`
+  forwards them.
+
+Other:
+
+- When the fill between the inner and the outer path would not match the
+  child's side (`strokeAlign` other than inside, or a label gap), the gradient
+  border is painted through a mask of the child's side in a layer. This is
+  pixel-exact for any shape but costs a `saveLayer` per paint. The default
+  configuration keeps the cheap fill.
 
 ## 0.1.2
 
