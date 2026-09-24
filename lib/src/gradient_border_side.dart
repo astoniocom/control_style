@@ -27,6 +27,12 @@ class GradientBorderSide {
   /// treated as a solid side with a fully transparent gradient, so the visible
   /// side fades in or out instead of switching abruptly. This mirrors
   /// [BorderSide.lerp].
+  ///
+  /// The gradients are interpolated with [Gradient.lerp]. Gradients of
+  /// different types (e.g. a [LinearGradient] and a [RadialGradient]) cannot
+  /// be interpolated with each other; Flutter fades the first one out until
+  /// `t` reaches 0.5 and then fades the second one in, so the border passes
+  /// through a transparent state instead of morphing.
   factory GradientBorderSide.lerp(
     GradientBorderSide a,
     GradientBorderSide b,
